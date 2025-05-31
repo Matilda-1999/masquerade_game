@@ -383,6 +383,7 @@ const startButton = getElement('startButton');
 const nextTurnButton = getElement('nextTurnButton');
 const battleLogDiv = getElement('battleLog');
 const mapGridContainer = getElement('mapGridContainer'); // 맵 컨테이너
+const skillDescriptionArea = getElement('skillDescriptionArea'); // 스킬 설명
 
 
 // --- 2. 핵심 클래스 정의 ---
@@ -848,8 +849,10 @@ function prepareNextTurn() { // 이 함수는 이제 '다음 아군 행동 선�
 function showSkillSelectionForNextAlly() {
     const aliveAllies = allyCharacters.filter(char => char.isAlive);
     if (currentActingCharacterIndex >= aliveAllies.length) {
+        if (skillDescriptionArea) skillDescriptionArea.innerHTML = ''; // ⭐ 설명 영역 초기화
+        return;
         // 이 경우는 prepareNextTurn에서 이미 처리함.
-        // 하지만 방어적으로 여기서도 UI 처리.
+        // 방어적으로 여기서도 UI 처리.
         logToBattleLog('모든 아군 캐릭터의 행동 선택이 완료. (showSkillSelectionForNextAlly)');
         skillSelectionArea.style.display = 'none';
         executeTurnButton.style.display = 'block';
