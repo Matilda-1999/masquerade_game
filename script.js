@@ -988,47 +988,44 @@ function confirmAction() {
 
 async function executeSingleAction(action) {
     const caster = action.caster;
-    if (!caster || !caster.isAlive) return;
+    if (!caster || !caster.isAlive) {
+        console.log(`[DEBUG] executeSingleAction: Caster ${caster ? caster.name : 'N/A'} is not alive or not found. Returning.`);
+        return; // 여기서 반환하면 executeBattleTurn의 루프가 다음 action으로 넘어가지 않을 수 있으니 주의.
+                // 이 경우는 보통 문제가 없지만, 만약 캐릭터가 중간에 죽고 이 조건에 걸리면
+                // false를 반환하지 않아 루프가 돌지 않을 수 있습니다.
+                // 다만, 현재 문제는 첫 캐릭터 행동 후 멈추는 것이므로, 이 부분은 나중 문제일 수 있습니다.
+    }
 
-    applyTurnStartEffects(caster); 
+    applyTurnStartEffects(caster);
 
     logToBattleLog(`\n--- ${caster.name}의 행동 (${currentTurn} 턴) ---`);
 
     if (action.type === 'skill') {
         const skill = action.skill;
         logToBattleLog(`${caster.name}이(가) [${skill.name}]을 사용합니다!`);
-        let skillSuccess = true; // Default to true
+        let skillSuccess = true;
         if (skill.execute) {
             let mainTarget = action.mainTarget;
             let subTarget = action.subTarget;
-            
-            // Standardized parameter passing for skill.execute
-            // The skill definition should handle which parameters it actually uses.
-            // For 'all_enemies', allies would be allyCharacters, enemies would be enemyCharacters.
-            // For 'all_allies', allies would be allyCharacters, enemies would be enemyCharacters.
-            // For 'single_enemy', mainTarget is the enemy, subTarget is null.
-            // For 'single_ally', mainTarget is the ally, subTarget is null.
-            // For 'self', mainTarget is the caster, subTarget is null.
-
             let actualAllies = allyCharacters.filter(a => a.isAlive);
             let actualEnemies = enemyCharacters.filter(e => e.isAlive);
 
-            if (skill.id === SKILLS.SKILL_TRUTH.id) { // SKILL_TRUTH specifically expects (caster, enemies, battleLog)
-                 skillSuccess = skill.execute(caster, actualEnemies, logToBattleLog);
+            console.log(`[DEBUG] executeSingleAction: Attempting to execute skill: ${skill.name} by ${caster.name}`); // 스킬 실행 직전 로그
+
+            if (skill.id === SKILLS.SKILL_TRUTH.id) {
+                skillSuccess = skill.execute(caster, actualEnemies, logToBattleLog);
             } else if (skill.targetType === 'all_allies'){
-                 skillSuccess = skill.execute(caster, actualAllies, actualEnemies, logToBattleLog);
+                skillSuccess = skill.execute(caster, actualAllies, actualEnemies, logToBattleLog);
+            } else {
+                skillSuccess = skill.execute(caster, mainTarget, subTarget, actualAllies, actualEnemies, logToBattleLog);
             }
-            // Add other specific cases if their execute functions have unique signatures
-            // Default/general case:
-            else {
-                 skillSuccess = skill.execute(caster, mainTarget, subTarget, actualAllies, actualEnemies, logToBattleLog);
-            }
+            console.log(`[DEBUG] executeSingleAction: Skill ${skill.name} execution finished. skillSuccess = ${skillSuccess}`); // 스킬 실행 직후 결과 로그
         }
 
-        if (skillSuccess === false) { 
+        if (skillSuccess === false) {
             logToBattleLog(`${skill.name} 사용에 실패했습니다.`);
         } else {
-            caster.lastSkillTurn[skill.id] = currentTurn; 
+            caster.lastSkillTurn[skill.id] = currentTurn;
         }
 
     } else if (action.type === 'move') {
@@ -1040,11 +1037,63 @@ async function executeSingleAction(action) {
         caster.posX = newX; caster.posY = newY;
         characterPositions[`${newX},${newY}`] = caster.id;
         logToBattleLog(`${caster.name}이(가) (${oldX},${oldY})에서 (${newX},${newY})로 이동. 턴 종료.`);
+        console.log(`[DEBUG] executeSingleAction: Character ${caster.name} moved.`); // 이동 후 로그
     }
+
     processEndOfTurnEffects(caster);
     displayCharacters();
-    if (checkBattleEnd()) return true; 
-    return false; 
+
+    console.log(`[DEBUG] executeSingleAction: About to call checkBattleEnd() for ${caster.name}.`); // checkBattleEnd 호출 직전 로그
+    if (checkBattleEnd()) {
+        console.log(`[DEBUG] executeSingleAction: checkBattleEnd() returned true for ${caster.name}. Battle ends. Returning true.`); // checkBattleEnd가 true 반환 시 로그
+        return true;
+    }
+
+    console.log(`[DEBUG] executeSingleAction: Action for ${caster.name} completed. Returning false to continue turn sequence.`); // 함수가 false 반환하기 직전 로그
+    return false;
+}
+
+async function executeBattleTurn() {
+    if (!isBattleStarted) { alert('전투를 시작해 주세요.'); return; }
+    if (playerActionsQueue.length === 0 && currentActingCharacterIndex < allyCharacters.filter(c=>c.isAlive).length ) {
+        alert('모든 아군의 행동을 선택하거나, 현재 행동 중인 아군의 행동을 확정해 주세요.');
+        return;
+    }
+    logToBattleLog(`\n--- ${currentTurn} 턴 아군 행동 실행 ---`);
+    skillSelectionArea.style.display = 'none';
+
+    console.log(`[DEBUG] executeBattleTurn: Starting ally actions. Queue length: ${playerActionsQueue.length}`); // 아군 행동 루프 시작 로그
+
+    for (const action of playerActionsQueue) {
+        console.log(`[DEBUG] executeBattleTurn: Processing action for ${action.caster.name}, type: ${action.type}`); // 각 행동 처리 시작 로그
+        if (await executeSingleAction(action)) {
+            console.log(`[DEBUG] executeBattleTurn: executeSingleAction returned true. Battle ending.Ally actions loop will break.`); // executeSingleAction이 true 반환 시 로그
+            return;
+        }
+        console.log(`[DEBUG] executeBattleTurn: Action processed for ${action.caster.name}. Continuing to next action if any.`); // 각 행동 처리 완료 후 루프 계속될 때 로그
+    }
+
+    console.log(`[DEBUG] executeBattleTurn: All ally actions processed. Starting enemy actions.`); // 적군 행동 루프 시작 전 로그
+
+    logToBattleLog(`\n--- ${currentTurn} 턴 적군 행동 실행 ---`);
+    for (const enemyChar of enemyCharacters) {
+        if (enemyChar.isAlive) {
+            console.log(`[DEBUG] executeBattleTurn: Processing action for enemy ${enemyChar.name}`); // 각 적군 행동 처리 시작 로그
+            if (await performEnemyAction(enemyChar)) {
+                console.log(`[DEBUG] executeBattleTurn: performEnemyAction returned true. Battle ending. Enemy actions loop will break.`); // performEnemyAction이 true 반환 시 로그
+                return;
+            }
+        }
+    }
+
+    console.log(`[DEBUG] executeBattleTurn: All enemy actions processed. Preparing for next turn.`); // 다음 턴 준비 전 로그
+
+    playerActionsQueue = [];
+    if (!checkBattleEnd() && isBattleStarted) {
+        prepareNextTurn();
+    } else {
+        console.log(`[DEBUG] executeBattleTurn: Battle ended or not started. currentTurn: ${currentTurn}, isBattleStarted: ${isBattleStarted}`); // 다음 턴 준비 안 할 경우 로그
+    }
 }
 
 async function executeBattleTurn() {
@@ -1133,6 +1182,8 @@ function checkBattleEnd() {
     const allEnemiesDead = enemyCharacters.every(char => !char.isAlive);
     const allAlliesDead = allyCharacters.every(char => !char.isAlive);
 
+    console.log(`[DEBUG] checkBattleEnd: allEnemiesDead=${allEnemiesDead} (Total: ${enemyCharacters.length}), allAlliesDead=${allAlliesDead} (Total: ${allyCharacters.length})`);
+    
     if (allEnemiesDead && enemyCharacters.length > 0) { 
         logToBattleLog('--- 모든 적을 물리쳤습니다. 전투 승리! 🎉 ---');
         endBattle();
