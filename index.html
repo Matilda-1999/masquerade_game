@@ -188,7 +188,7 @@
         <div class="character-input">
             <h2>캐릭터 추가</h2>
             <label for="charName">이름:</label>
-            <input type="text" id="charName" value="용사">
+            <input type="text" id="charName" value="이름">
 
             <label for="charType">영감:</label>
             <select id="charType">
@@ -234,8 +234,7 @@
             <button onclick="startBattle()" id="startButton">전투 시작</button>
             <button onclick="prepareNextTurn()" id="nextTurnButton" style="display: none;">다음 턴 (스킬/이동 선택)</button>
             <button onclick="executeBattleTurn()" id="executeTurnButton" style="display: none;">턴 실행</button>
-            <button onclick="autoBattle()" id="autoBattleButton">자동 전투 Toggle</button>
-        </div>
+            </div>
 
         <div id="skillSelectionArea" class="skill-selection" style="display: none;">
             <h3>스킬/이동 선택: <span id="currentActingCharName"></span></h3>
@@ -255,6 +254,5 @@
     </div>
 
     <script src="script.js"></script>
-    <script src="mapData.js"></script>
-</body>
+    <script src="mapData.js"></script> </body>
 </html>
