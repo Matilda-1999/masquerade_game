@@ -1169,7 +1169,7 @@ console.log(`[DEBUG] executeSingleAction: Attempting to execute skill: ${skill.n
             if (oldX !== -1 && oldY !== -1) delete characterPositions[`${oldX},${oldY}`];
             caster.posX = newX; caster.posY = newY;
             characterPositions[`${newX},${newY}`] = caster.id;
-            logToBattleLog(`✦이동✦ <span class="math-inline">\{caster\.name\}, \(</span>{oldX},<span class="math-inline">\{oldY\}\)에서 \(</span>{newX},${newY})(으)로 이동 완료.);
+            logToBattleLog(`✦이동✦ ${caster.name}, (${oldX},${oldY})에서 (${newX},${newY})(으)로 이동 완료.`);
             console.log(`[DEBUG] executeSingleAction: Character ${caster.name} moved to (${newX},${newY}).`);
         }
     }
