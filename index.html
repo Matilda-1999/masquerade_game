@@ -91,8 +91,9 @@
             position: relative; /* 삭제 버튼 위치 지정을 위함 */
         }
         .character-stats.selected {
-            border: 2px solid #007bff;
-            background-color: #cfe8ff;
+            /* 아군/적군 선택 시 테두리 색상 변경 */
+            border: 2px solid #d4af37; /* 황금색 계열로 변경 */
+            background-color: #2b2520; /* 전체 배경색과 어울리게 변경 */
         }
         .character-stats p {
             margin: 5px 0;
@@ -145,17 +146,18 @@
 
 
         .battle-area {
-            background-color: #e0f2f7;
+            background-color: #2b2520; /* 어두운 색상으로 변경 */
             padding: 20px;
             border-radius: 8px;
             margin-top: 20px;
+            border: 2px solid #d4af37; /* 황금색 계열로 변경 */
         }
         .battle-log-container { /* 전투 로그 섹션 컨테이너 */
             margin-top: 20px;
         }
         .battle-log {
-            background-color: #fadada;
-            color: #1f1b16;
+            background-color: #3b352e; /* 어두운 색상으로 변경 */
+            color: #f0e6d2; /* 글자색 변경 */
             padding: 15px;
             height: 250px; /* 높이 약간 늘림 */
             overflow-y: scroll;
@@ -163,30 +165,31 @@
             margin-top: 15px;
             font-family: 'Courier New', Courier, monospace;
             white-space: pre-wrap;
+            border: 1px solid #e0a96d; /* 황금색 계열로 변경 */
         }
         .battle-controls button, .movement-controls button {
             margin: 5px;
             padding: 10px 15px; /* 크기 통일 */
             font-size: 16px; /* 크기 통일 */
             cursor: pointer;
-            background-color: #007bff;
-            color: white;
+            background: linear-gradient(to right, #d4af37, #e0a96d); /* 황금색 그라데이션 */
+            color: #121212; /* 글자색 어둡게 */
             border: none;
             border-radius: 5px;
         }
         .battle-controls button:hover, .movement-controls button:hover {
-            background-color: #0056b3;
+            background: linear-gradient(to right, #e0a96d, #d4af37); /* hover 시 색상 반전 */
         }
         .skill-selection {
             margin-top: 20px;
-            border: 2px solid #007bff;
+            border: 2px solid #d4af37; /* 황금색 계열로 변경 */
             padding: 15px;
             border-radius: 8px;
-            background-color: #e0f2f7;
+            background-color: #2b2520; /* 어두운 색상으로 변경 */
         }
         .skill-buttons button {
-            background-color: #28a745;
-            color: white;
+            background-color: #d4af37; /* 황금색으로 변경 */
+            color: #121212; /* 글자색 어둡게 */
             padding: 8px 12px;
             margin: 5px;
             border: none;
@@ -194,15 +197,19 @@
             cursor: pointer;
         }
         .skill-buttons button:hover {
-            background-color: #218838;
+            background-color: #e0a96d; /* hover 시 색상 변경 */
         }
         .movement-controls { /* 이동 버튼 컨테이너 */
             margin-top: 10px;
             padding: 10px;
-            background-color: #f0f0f0;
+            background-color: #3b352e; /* 어두운 색상으로 변경 */
             border-radius: 5px;
+            border: 1px solid #e0a96d; /* 황금색 계열로 변경 */
         }
-        .movement-controls h4 { margin-top: 0; }
+        .movement-controls h4 { 
+            margin-top: 0;
+            color: #f0e6d2; /* 글자색 변경 */
+        }
     /* 화면 폭이 768px 이하일 때 적용될 스타일 */
     @media (max-width: 768px) {
         .flex-container {
