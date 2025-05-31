@@ -1097,6 +1097,52 @@ async function executeBattleTurn() {
 }
 
 async function executeBattleTurn() {
+    console.log(`[DEBUG] executeBattleTurn: Starting turn ${currentTurn}. Player actions in queue: ${playerActionsQueue.length}`);
+
+    skillSelectionArea.style.display = 'none';
+    // executeTurnButton.disabled = true; // 턴 실행 중 버튼 비활성화 고려
+    // nextTurnButton.style.display = 'none'; // 턴 실행 중 다음 턴 버튼 숨김
+
+    logToBattleLog(`\n--- ${currentTurn} 턴 아군 행동 실행 ---`);
+    for (const action of playerActionsQueue) {
+        console.log(`[DEBUG] executeBattleTurn: Ally action for ${action.caster.name}`);
+        if (await executeSingleAction(action)) {
+            console.log(`[DEBUG] executeBattleTurn: Battle ended during ally turn.`);
+            // executeTurnButton.disabled = false; // 버튼 상태 복원
+            return; // 전투 종료
+        }
+    }
+    console.log(`[DEBUG] executeBattleTurn: All ally actions completed for turn ${currentTurn}.`);
+
+    logToBattleLog(`\n--- ${currentTurn} 턴 적군 행동 실행 ---`);
+    for (const enemyChar of enemyCharacters) {
+        if (enemyChar.isAlive) {
+            console.log(`[DEBUG] executeBattleTurn: Enemy action for ${enemyChar.name}`);
+            if (await performEnemyAction(enemyChar)) {
+                console.log(`[DEBUG] executeBattleTurn: Battle ended during enemy turn.`);
+                // executeTurnButton.disabled = false; // 버튼 상태 복원
+                return; // 전투 종료
+            }
+        }
+    }
+    console.log(`[DEBUG] executeBattleTurn: All enemy actions completed for turn ${currentTurn}.`);
+
+    // 중요: playerActionsQueue는 prepareNextTurn에서 currentActingCharacterIndex와 함께 초기화되므로,
+    // 여기서 비우는 것보다 prepareNextTurn이 확실히 호출되게 하는 것이 중요.
+    // playerActionsQueue = []; // 이 줄은 prepareNextTurn에서 처리하므로 여기서 중복 필요 없음.
+
+    console.log(`[DEBUG] executeBattleTurn: End of turn ${currentTurn}. About to check conditions for prepareNextTurn.`);
+    if (!checkBattleEnd() && isBattleStarted) {
+        console.log(`[DEBUG] executeBattleTurn: Preparing next turn.`);
+        prepareNextTurn(); // 여기가 호출되어야 다음 턴 UI가 나옴
+    } else {
+        console.log(`[DEBUG] executeBattleTurn: Battle ended or not started. Not preparing next turn. isBattleStarted: ${isBattleStarted}`);
+        // 전투 종료 시 UI 정리 (endBattle 함수에서 처리)
+        // executeTurnButton.disabled = false; // 필요하면 버튼 상태 복원
+        // startButton.style.display = 'block'; // 예시
+    }
+}
+
     if (!isBattleStarted) { alert('전투를 시작해 주세요.'); return; }
     if (playerActionsQueue.length === 0 && currentActingCharacterIndex < allyCharacters.filter(c=>c.isAlive).length ) {
         alert('모든 아군의 행동을 선택하거나, 현재 행동 중인 아군의 행동을 확정해 주세요.');
