@@ -226,6 +226,17 @@
         background: linear-gradient(to right, #218838, #28a745); /* 호버 시 색상 반전 또는 더 진하게 */
         transform: translateY(-2px); /* 호버 시 살짝 떠오르는 효과 */
     }
+
+    .skill-description-display {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: ##3b352e;
+    border: 1px solid ##3b352e;
+    border-radius: 4px;
+    font-size: 0.9em;
+    min-height: 40px; /* 설명이 없을 때도 최소 높이 유지 */
+    color: #f0e6d2;
+    }
         
     /* 화면 폭이 768px 이하일 때 적용될 스타일 */
     @media (max-width: 768px) {
@@ -302,6 +313,8 @@
         <div id="skillSelectionArea" class="skill-selection" style="display: none;">
             <h3>스킬/이동 선택: <span id="currentActingCharName"></span></h3>
             <div id="availableSkills" class="skill-buttons">
+                </div>
+            <div id="skillDescriptionArea" class.skill-description-display"> 
                 </div>
             <div class="movement-controls" id="movementControlsArea">
                 <h4>이동 (선택 시 턴 종료)</h4>
