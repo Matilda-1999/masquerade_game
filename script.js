@@ -1,4 +1,9 @@
-// --- 0. 상수 정의 ---
+// --- 상수 정의 ---
+
+// 위치 정의
+const MAP_WIDTH = 5;
+const MAP_HEIGHT = 5;
+
 // 스킬 데이터 정의
 const SKILLS = {
     // [근성]
@@ -313,6 +318,119 @@ const SKILLS = {
     }
 };
 
+// UI 및 캐릭터 관리 함수 ---
+
+// HTML 요소 가져오기 헬퍼 함수
+function getElement(id) {
+    return document.getElementById(id);
+}
+
+// 전투 로그에 메시지 출력
+const battleLogDiv = getElement('battleLog');
+function logToBattleLog(message) {
+    if (battleLogDiv) {
+        battleLogDiv.innerHTML += message + '\n';
+        battleLogDiv.scrollTop = battleLogDiv.scrollHeight; // 항상 마지막 로그가 보이도록 스크롤
+    } else {
+        console.log(message); // battleLogDiv가 없을 경우 콘솔에 출력
+    }
+}
+
+// 캐릭터 추가 함수
+function addCharacter(team) {
+    const nameInput = getElement('charName');
+    const typeInput = getElement('charType');
+
+    const name = nameInput.value.trim();
+    const type = typeInput.value;
+
+    if (!name) {
+        alert('캐릭터 이름을 입력해 주세요.');
+        nameInput.focus();
+        return;
+    }
+
+    const newChar = new Character(name, type); // Character 클래스는 이미 script.js에 정의되어 있습니다.
+
+    if (team === 'ally') {
+        allyCharacters.push(newChar);
+        logToBattleLog(`✅ 아군 [${name} (${type})]이(가) 합류했습니다.`);
+    } else if (team === 'enemy') {
+        enemyCharacters.push(newChar);
+        logToBattleLog(`🔥 적군 [${name} (${type})]이(가) 나타났습니다.`);
+    } else {
+        logToBattleLog('알 수 없는 팀입니다.');
+        return;
+    }
+
+    displayCharacters(); // 캐릭터 목록 UI 업데이트
+
+    // 입력 필드 초기화 (선택 사항)
+    // nameInput.value = (team === 'ally' ? '용사' : '적'); // 기본값으로 다시 설정할 수 있습니다.
+}
+
+// 캐릭터 목록 표시 함수
+function displayCharacters() {
+    const allyDisplay = getElement('allyCharacters');
+    const enemyDisplay = getElement('enemyCharacters');
+
+    allyDisplay.innerHTML = ''; // 기존 내용 초기화
+    if (allyCharacters.length === 0) {
+        allyDisplay.innerHTML = '<p>아군 캐릭터가 없습니다.</p>';
+    } else {
+        allyCharacters.forEach(char => {
+            const charDiv = createCharacterCard(char, 'ally');
+            allyDisplay.appendChild(charDiv);
+        });
+    }
+
+    enemyDisplay.innerHTML = ''; // 기존 내용 초기화
+    if (enemyCharacters.length === 0) {
+        enemyDisplay.innerHTML = '<p>적군 캐릭터가 없습니다.</p>';
+    } else {
+        enemyCharacters.forEach(char => {
+            const charDiv = createCharacterCard(char, 'enemy');
+            enemyDisplay.appendChild(charDiv);
+        });
+    }
+
+    const mapContainer = getElement('mapGridContainer'); // 'mapGridContainer'는 index.html에 있는 맵 div의 ID입니다.
+    if (typeof renderMapGrid === 'function') {
+        renderMapGrid(mapContainer, allyCharacters, enemyCharacters);
+    } else {
+        console.error("renderMapGrid 함수를 찾을 수 없습니다. mapData.js가 올바르게 로드되었는지 확인하세요.");
+    }
+}
+
+// 캐릭터 카드 생성 함수 (UI 업데이트용)
+function createCharacterCard(character, team) {
+    const card = document.createElement('div');
+    card.className = 'character-stats'; // 기본 카드 스타일
+    if (selectedSkillId && SKILLS[selectedSkillId]) { // 스킬 선택 중일 때 대상 강조
+        const skillInfo = SKILLS[selectedSkillId];
+        if (selectedTargetCharId === character.id || (skillInfo.targetSelection === 'two_enemies' && selectedSubTargetCharId === character.id)) {
+            card.classList.add('selected'); // 선택된 대상 스타일
+        }
+    }
+
+    card.innerHTML = `
+        <p><strong>${character.name} (${character.type})</strong></p>
+        <p>HP: ${character.currentHp.toFixed(0)} / ${character.maxHp.toFixed(0)} ${character.shield > 0 ? `(+${character.shield.toFixed(0)}🛡️)` : ''}</p>
+        <p>공격력: ${character.atk} | 마법 공격력: ${character.matk}</p>
+        <p>방어력: ${character.def} | 마법 방어력: ${character.mdef}</p>
+        <p>상태: ${character.isAlive ? '생존' : '쓰러짐'}</p>
+        ${character.buffs.length > 0 ? `<p>버프: ${character.buffs.map(b => `${b.name}(${b.turnsLeft}턴)`).join(', ')}</p>` : ''}
+        ${character.debuffs.length > 0 ? `<p>디버프: ${character.debuffs.map(d => `${d.name}(${d.turnsLeft}턴)`).join(', ')}</p>` : ''}
+    `;
+    card.onclick = () => {
+        if (isBattleStarted && skillSelectionArea.style.display !== 'none') { // 전투 중이고 스킬 선택 창이 활성화되어 있을 때만
+            selectTarget(character.id);
+        }
+    };
+    return card;
+}
+
+
 // --- 게임 상태 변수 ---
 let allyCharacters = [];
 let enemyCharacters = [];
@@ -359,7 +477,9 @@ class Character {
         }
 
         this.maxHp = 100;
-        this.currentHp = this.maxHp;
+        // currentHp 설정 로직 변경
+        this.currentHp = (currentHpOverride !== null && !isNaN(currentHpOverride) && currentHpOverride > 0) ? Math.min(currentHpOverride, this.maxHp) : this.maxHp;
+        if (this.currentHp > this.maxHp) this.currentHp = this.maxHp;
         this.isAlive = true;
 
         // 모든 스킬을 기본으로 가짐 (테스트용)
@@ -374,6 +494,10 @@ class Character {
         this.lastAttackedBy = null; // 마지막으로 자신을 공격한 캐릭터 (반격, 역습용)
         this.currentTurnDamageTaken = 0; // 현재 턴에 받은 피해 (반격, 역습용)
         this.currentTurnAlliesDamageTaken = 0; // 현재 턴에 아군이 받은 총 피해 ([근성]용)
+
+         // 맵 위치 속성 추가
+        this.posX = -1; // 초기값 (맵에 배치되지 않음)
+        this.posY = -1;
     }
 
     // 버프 추가
@@ -849,7 +973,7 @@ function selectSkill(skillId) {
 // 대상 선택 (캐릭터 카드 클릭 시)
 function selectTarget(targetCharId) {
     if (!selectedSkillId) {
-        alert('먼저 사용할 스킬을 선택해주세요!');
+        alert('먼저 사용할 스킬을 선택해 주세요!');
         return;
     }
 
@@ -858,7 +982,7 @@ function selectTarget(targetCharId) {
     const targetChar = findCharacterById(targetCharId);
 
     if (!targetChar || !targetChar.isAlive) {
-        alert('유효한 대상을 선택해주세요!');
+        alert('유효한 대상을 선택해 주세요!');
         return;
     }
 
@@ -936,20 +1060,20 @@ function confirmSkillSelection() {
     } else if (skill.targetSelection === 'ally' || skill.targetSelection === 'ally_or_self') {
         mainTarget = findCharacterById(selectedTargetCharId);
         if (!mainTarget || !allyCharacters.includes(mainTarget)) {
-            alert('올바른 아군 대상을 선택해주세요.');
+            alert('올바른 아군 대상을 선택해 주세요.');
             return;
         }
     } else if (skill.targetSelection === 'enemy') {
         mainTarget = findCharacterById(selectedTargetCharId);
         if (!mainTarget || !enemyCharacters.includes(mainTarget)) {
-            alert('올바른 적군 대상을 선택해주세요.');
+            alert('올바른 적군 대상을 선택해 주세요.');
             return;
         }
     } else if (skill.targetSelection === 'two_enemies') {
         mainTarget = findCharacterById(selectedTargetCharId);
         subTarget = findCharacterById(selectedSubTargetCharId);
         if (!mainTarget || !subTarget || !enemyCharacters.includes(mainTarget) || !enemyCharacters.includes(subTarget)) {
-            alert('두 명의 적군 대상을 모두 선택해주세요.');
+            alert('두 명의 적군 대상을 모두 선택해 주세요.');
             return;
         }
     }
@@ -971,11 +1095,11 @@ function confirmSkillSelection() {
 // 턴 실행 (사용자가 선택한 스킬들을 순서대로 실행)
 async function executeBattleTurn() {
     if (!isBattleStarted) {
-        alert('전투를 시작해주세요!');
+        alert('전투를 시작해 주세요!');
         return;
     }
     if (playerActionsQueue.length === 0) {
-        alert('먼저 아군 캐릭터들의 스킬을 선택해주세요!');
+        alert('먼저 아군 캐릭터들의 스킬을 선택해 주세요!');
         return;
     }
 
@@ -1145,13 +1269,13 @@ function autoBattle() {
 // 페이지 로드 시 초기 설정
 document.addEventListener('DOMContentLoaded', () => {
     // 초기 아군 캐릭터 추가 (테스트용)
-    allyCharacters.push(new Character("용사 라온", "야수"));
-    allyCharacters.push(new Character("마법사 루아", "천체"));
-    allyCharacters.push(new Character("성직자 세이", "나무"));
+    allyCharacters.push(new Character("파투투", "야수"));
+    allyCharacters.push(new Character("튜즈데이", "천체"));
+    allyCharacters.push(new Character("이졸데", "나무"));
     
     // 초기 적군 캐릭터 추가 (테스트용)
-    enemyCharacters.push(new Character("고블린", "야수"));
-    enemyCharacters.push(new Character("오크", "암석"));
+    enemyCharacters.push(new Character("우어어", "야수"));
+    enemyCharacters.push(new Character("우아아", "암석"));
     
     displayCharacters(); // 초기 캐릭터 표시
 });
