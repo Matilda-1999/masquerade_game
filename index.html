@@ -368,14 +368,6 @@
             <button onclick="addCharacter('ally')" class="button"><span class="material-icons-outlined">group_add</span>아군 추가</button>
             <button onclick="addCharacter('enemy')" class="button"><span class="material-icons-outlined">person_add_disabled</span>적군 추가</button>
         </div>
-
-        <div class="map-display-area">
-            <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">map</span>맵 상황</h2>
-            <div id="mapGridContainer" class="map-grid-container">
-                </div>
-             <div id="mapInfo">
-                </div>
-        </div>
         
         <div class="character-cards-wrapper">
             <div class="ally-card-area">
@@ -392,7 +384,15 @@
                 </div>
             </div>
         </div>
-
+        
+        <div class="map-display-area">
+            <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">map</span>맵 상황</h2>
+            <div id="mapGridContainer" class="map-grid-container">
+                </div>
+             <div id="mapInfo">
+                </div>
+        </div>
+        
     </div> <div class="container battle-area"> <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">sports_kabaddi</span>전투 진행 및 스킬 선택</h2>
         <div class="battle-controls">
             <button onclick="startBattle()" id="startButton" class="button"><span class="material-icons">play_arrow</span>전투 시작</button>
