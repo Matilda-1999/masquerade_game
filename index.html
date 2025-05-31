@@ -16,14 +16,22 @@
         }
         .container {
             background-color: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            width: 80%;
-            max-width: 900px;
+            width: 90%;
+            max-width: 1000px;
             margin-bottom: 20px;
         }
-        h1, h2 {
+        .flex-container { /* 아군/적군, 맵 영역을 가로로 배치하기 위함 */
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .character-management-area, .map-display-area {
+            flex-basis: 48%; /* 공간 분배 */
+        }
+        h1, h2, h3 {
             color: #333;
         }
         .character-input, .character-display {
@@ -45,62 +53,114 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+            margin-top: 5px;
         }
         .character-input button:hover {
             background-color: #45a049;
         }
-        .character-stats { /* 추가: 각 캐릭터 카드 스타일 */
+        .character-stats {
             border: 1px solid #cceeff;
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 5px;
             background-color: #e6f7ff;
+            position: relative; /* 삭제 버튼 위치 지정을 위함 */
         }
-        .character-stats.selected { /* 추가: 선택된 캐릭터 카드 스타일 */
+        .character-stats.selected {
             border: 2px solid #007bff;
             background-color: #cfe8ff;
         }
         .character-stats p {
             margin: 5px 0;
         }
+        .delete-char-button { /* 캐릭터 삭제 버튼 스타일 */
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 3px 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .delete-char-button:hover {
+            background-color: #d32f2f;
+        }
+
+        /* 맵 스타일 */
+        .map-grid-container {
+            margin-top: 15px;
+            border: 1px solid #aaa;
+        }
+        .map-row {
+            display: flex;
+        }
+        .map-cell {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            position: relative; /* 캐릭터 마커 위치용 */
+            box-sizing: border-box;
+        }
+        .map-cell .char-marker {
+            font-size: 12px;
+            font-weight: bold;
+            padding: 2px;
+            border-radius: 50%;
+            min-width: 18px;
+            text-align: center;
+        }
+        .map-cell .char-marker.ally { background-color: #6495ED; color: white; }
+        .map-cell .char-marker.enemy { background-color: #DC143C; color: white; }
+
+
         .battle-area {
             background-color: #e0f2f7;
             padding: 20px;
             border-radius: 8px;
             margin-top: 20px;
         }
+        .battle-log-container { /* 전투 로그 섹션 컨테이너 */
+            margin-top: 20px;
+        }
         .battle-log {
             background-color: #333;
             color: #eee;
             padding: 15px;
-            height: 200px;
+            height: 250px; /* 높이 약간 늘림 */
             overflow-y: scroll;
             border-radius: 5px;
             margin-top: 15px;
             font-family: 'Courier New', Courier, monospace;
-            white-space: pre-wrap; /* 줄바꿈 유지 */
+            white-space: pre-wrap;
         }
-        .battle-controls button {
+        .battle-controls button, .movement-controls button {
             margin: 5px;
-            padding: 10px 20px;
-            font-size: 18px;
+            padding: 10px 15px; /* 크기 통일 */
+            font-size: 16px; /* 크기 통일 */
             cursor: pointer;
             background-color: #007bff;
             color: white;
             border: none;
             border-radius: 5px;
         }
-        .battle-controls button:hover {
+        .battle-controls button:hover, .movement-controls button:hover {
             background-color: #0056b3;
         }
-        .skill-selection { /* 추가: 스킬 선택 영역 스타일 */
+        .skill-selection {
             margin-top: 20px;
             border: 2px solid #007bff;
             padding: 15px;
             border-radius: 8px;
             background-color: #e0f2f7;
         }
-        .skill-buttons button { /* 추가: 스킬 버튼 스타일 */
+        .skill-buttons button {
             background-color: #28a745;
             color: white;
             padding: 8px 12px;
@@ -112,14 +172,21 @@
         .skill-buttons button:hover {
             background-color: #218838;
         }
+        .movement-controls { /* 이동 버튼 컨테이너 */
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+        .movement-controls h4 { margin-top: 0; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>마스레이드 전투 시뮬레이터</h1>
 
-        <h2>캐릭터 추가</h2>
         <div class="character-input">
+            <h2>캐릭터 추가</h2>
             <label for="charName">이름:</label>
             <input type="text" id="charName" value="용사">
 
@@ -130,41 +197,64 @@
                 <option value="야수">야수</option>
                 <option value="나무">나무</option>
             </select>
+
+            <label for="charCurrentHp">현재 체력(최대 체력 100과 동일하게 하려면 비워 두세요):</label>
+            <input type="number" id="charCurrentHp" placeholder="예: 80">
+
             <button onclick="addCharacter('ally')">아군 추가</button>
             <button onclick="addCharacter('enemy')">적군 추가</button>
         </div>
 
-        <h2>아군</h2>
-        <div id="allyCharacters" class="character-display">
-            <p>아군 캐릭터가 없습니다.</p>
-        </div>
+        <div class="flex-container">
+            <div class="character-management-area">
+                <h2>아군</h2>
+                <div id="allyCharacters" class="character-display">
+                    <p>아군 캐릭터가 없습니다.</p>
+                </div>
 
-        <h2>적군</h2>
-        <div id="enemyCharacters" class="character-display">
-            <p>적군 캐릭터가 없습니다.</p>
+                <h2>적군</h2>
+                <div id="enemyCharacters" class="character-display">
+                    <p>적군 캐릭터가 없습니다.</p>
+                </div>
+            </div>
+
+            <div class="map-display-area">
+                <h2>맵 상황</h2>
+                <div id="mapGridContainer" class="map-grid-container">
+                    </div>
+                 <div id="mapInfo">
+                    </div>
+            </div>
         </div>
     </div>
 
     <div class="container battle-area">
-        <h2>전투 상황</h2>
+        <h2>전투 진행 및 스킬 선택</h2>
         <div class="battle-controls">
             <button onclick="startBattle()" id="startButton">전투 시작</button>
-            <button onclick="prepareNextTurn()" id="nextTurnButton">다음 턴 (스킬 선택)</button> 
+            <button onclick="prepareNextTurn()" id="nextTurnButton" style="display: none;">다음 턴 (스킬/이동 선택)</button>
             <button onclick="executeBattleTurn()" id="executeTurnButton" style="display: none;">턴 실행</button>
-        </div>
-        
-        <div id="skillSelectionArea" class="skill-selection" style="display: none;">
-            <h3>스킬 선택: <span id="currentActingCharName"></span></h3>
-            <div id="availableSkills" class="skill-buttons">
-                </div>
-            <p>대상 선택: <span id="selectedTargetName">없음</span></p>
-            <button onclick="confirmSkillSelection()" id="confirmSkillButton" style="display: none;">이 스킬 사용!</button>
+            <button onclick="autoBattle()" id="autoBattleButton">자동 전투 Toggle</button>
         </div>
 
+        <div id="skillSelectionArea" class="skill-selection" style="display: none;">
+            <h3>스킬/이동 선택: <span id="currentActingCharName"></span></h3>
+            <div id="availableSkills" class="skill-buttons">
+                </div>
+            <div class="movement-controls" id="movementControlsArea">
+                <h4>이동 (선택 시 턴 종료)</h4>
+                </div>
+            <p>대상 선택: <span id="selectedTargetName">없음</span></p>
+            <button onclick="confirmAction()" id="confirmActionButton" style="display: none;">행동 확정</button> </div>
+    </div>
+
+    <div class="container battle-log-container">
+        <h2>전투 로그</h2>
         <div class="battle-log" id="battleLog">
             </div>
     </div>
 
     <script src="script.js"></script>
+    <script src="mapData.js"></script>
 </body>
 </html>
