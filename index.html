@@ -8,55 +8,80 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Diphylleia&family=Gowun+Batang&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined" rel="stylesheet">
 
     <style>
-        /* CSS: 웹 페이지 꾸미는 부분 */
+        :root {
+            --font-body: 'Gowun Batang', serif;
+            --font-title: 'Diphylleia', serif;
+            --color-primary-gold: #d4af37;
+            --color-primary-gold-darker: #b8860b;
+            --color-primary-gold-lighter: #e6a82d;
+            --color-background: #121212;
+            --color-surface: #1e1e1e;
+            --color-surface-alt: #2a2a2a;
+            --color-text-primary: #e0e0e0;
+            --color-text-secondary: #b0b0b0;
+            --color-border: #555;
+            --color-border-accent: #7b6020;
+            --color-accent-green: #28a745;
+            --color-accent-red: #e74c3c;
+            --color-accent-blue: #3498db;
+        }
+
         body {
-            font-family: 'Gowun Batang', serif; /* 본문 폰트 */
-            background-color: #181a1b; 
-            color: #d1d1d1; 
+            font-family: var(--font-body);
+            background-color: var(--color-background);
+            color: var(--color-text-primary);
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px;
             margin: 0;
+            line-height: 1.6; /* 기본 줄 간격 */
         }
         .container {
-            background-color: #222526; 
-            padding: 25px; 
-            border-radius: 10px; 
-            box-shadow: 0 5px 25px rgba(200, 150, 40, 0.15); 
-            width: 95%; 
+            background-color: var(--color-surface);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(200, 150, 40, 0.15);
+            width: 95%;
             max-width: 1000px;
-            margin-bottom: 25px; 
-            border: 1px solid #b8860b; 
+            margin-bottom: 25px;
+            border: 1px solid var(--color-primary-gold-darker);
         }
         
-        h1, h2, h3 {
-            font-family: 'Diphylleia', serif; /* 제목 폰트 */
-            color: #d4af37; 
+        h1, h2, h3, h4 { /* h4 추가 */
+            font-family: var(--font-title);
+            color: var(--color-primary-gold);
             text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
         }
-        h1 {
+        h1 { /* 제목 강조 */
             text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.2em; 
+            margin-bottom: 35px; /* 여백 증가 */
+            font-size: 2.5em; /* 크기 증가 */
+            letter-spacing: 1px; /* 자간 조정 */
+            border-bottom: 2px solid var(--color-primary-gold-darker);
+            padding-bottom: 15px;
         }
         h2 {
-            font-family: 'Diphylleia', serif; /* h2도 Diphylleia 적용 */
-            color: #d4af37;
-            margin-top: 25px;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #444; 
-            padding-bottom: 8px;
-            font-size: 1.6em; /* h2 크기 조정 */
+            margin-top: 30px; /* 여백 증가 */
+            margin-bottom: 20px; /* 여백 증가 */
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 10px;
+            font-size: 1.8em; /* 크기 증가 */
         }
         h3 {
-            font-family: 'Diphylleia', serif; /* h3도 Diphylleia 적용 */
-            color: #d4af37;
-            margin-top: 20px;
+            margin-top: 25px; /* 여백 증가 */
+            margin-bottom: 15px; /* 여백 증가 */
+            font-size: 1.4em; /* 크기 증가 */
+            color: var(--color-primary-gold-lighter); /* 약간 다른 금색 */
+        }
+        h4 {
+            font-size: 1.1em;
+            color: var(--color-text-secondary);
             margin-bottom: 10px;
-            font-size: 1.3em; /* h3 크기 조정 */
         }
         
         .flex-container {
@@ -70,354 +95,365 @@
         }
         
         .character-input, .character-display {
-            background-color: #2a2a2a; 
-            border: 1px solid #7b6020; 
-            padding: 15px; 
-            margin-bottom: 20px;
-            border-radius: 6px; 
+            background-color: var(--color-surface-alt);
+            border: 1px solid var(--color-border-accent);
+            padding: 20px; /* 패딩 증가 */
+            margin-bottom: 25px; /* 여백 증가 */
+            border-radius: 8px; /* 둥글기 증가 */
         }
-        .character-input label { 
+        .character-input label {
             display: block;
-            margin-bottom: 8px; 
-            font-size: 14px; 
-            color: #ccc; 
+            margin-bottom: 10px; /* ⭐ '캐릭터 추가' 요소들 사이 여백 증가 */
+            font-size: 1em; /* 폰트 크기 1em으로 통일 */
+            color: var(--color-text-secondary);
             font-weight: bold;
         }
         
         .character-input select,
-        .character-input input[type="text"], 
-        .character-input input[type="number"] { 
-            background-color: #333; 
-            border: 1px solid #d4af37;
-            border-radius: 4px;
-            padding: 10px; 
-            color: #f5f5f5; 
-            width: calc(100% - 22px); 
+        .character-input input[type="text"],
+        .character-input input[type="number"] {
+            background-color: #383838; /* 입력 필드 배경 약간 밝게 */
+            border: 1px solid var(--color-border);
+            border-radius: 5px; /* 둥글기 증가 */
+            padding: 12px; /* 패딩 증가 */
+            color: var(--color-text-primary);
+            width: calc(100% - 24px); 
             box-sizing: border-box;
-            margin-bottom: 10px; /* 입력 필드 간 간격 추가 */
+            margin-bottom: 15px; /* ⭐ '캐릭터 추가' 요소들 사이 여백 증가 */
+            font-size: 1em;
         }
         .character-input input[type="text"]:focus,
         .character-input input[type="number"]:focus,
         .character-input select:focus {
-            border-color: #e6a82d; /* 포커스 시 황금색 테두리 (더 밝게) */
-            box-shadow: 0 0 8px rgba(230, 168, 45, 0.4);
+            border-color: var(--color-primary-gold);
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
             outline: none;
         }
         
-        .character-input button {
-            font-family: 'Gowun Batang', sans-serif; /* 버튼 폰트 일관성 */
-            background: linear-gradient(145deg, #d4af37, #c09526); 
-            color: #1a1a1a; 
-            padding: 10px 18px; 
+        /* 버튼 공통 스타일 */
+        .button { 
+            font-family: var(--font-body);
+            background: linear-gradient(145deg, var(--color-primary-gold-lighter), var(--color-primary-gold-darker));
+            color: #101010; /* 매우 어두운 색으로 대비 강화 */
+            padding: 10px 20px;
             border: none;
-            border-radius: 5px; 
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 15px; 
+            font-size: 1em;
             font-weight: bold;
-            margin-top: 15px; 
-            box-shadow: 0 3px 7px rgba(0,0,0,0.5); 
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 3px 7px rgba(0,0,0,0.4);
+            transition: all 0.2s ease-out;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            display: inline-flex; /* 아이콘과 텍스트 정렬 위함 */
+            align-items: center;
+            justify-content: center;
         }
-        .character-input button:hover {
-            transform: translateY(-2px); 
+        .button .material-icons, .button .material-icons-outlined {
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+
+        .button:hover {
+            background: linear-gradient(145deg, var(--color-primary-gold), var(--color-primary-gold-lighter));
+            transform: translateY(-2px);
             box-shadow: 0 5px 10px rgba(212, 175, 55, 0.3);
         }
-        .character-stats {
-            background-color: rgba(37, 37, 37, 0.85); /* 배경색 약간 조정 및 투명도 */
-            backdrop-filter: blur(4px); 
-            color: #ccc; 
-            border: 1px solid #5a4826; 
-            padding: 12px; 
-            border-radius: 6px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-            position: relative;
-            margin-bottom: 12px; 
-        }
-        .character-stats.selected {
-            border: 2px solid #d4af37; 
-            background-color: #3a3a3a; /* 선택 시 배경 변경 */
-        }
-        .character-stats p {
-            margin: 6px 0; 
-            font-size: 13px; 
-            line-height: 1.6; 
-        }
-        .character-stats strong { 
-            color: #d4af37;
-            font-weight: 700;
-        }
-        .delete-char-button {
-            position: absolute;
-            top: 8px; 
-            right: 8px; 
-            background-color: #c0392b; 
-            color: white;
-            border: none;
-            border-radius: 4px; 
-            padding: 4px 7px; 
-            font-size: 11px; 
-            cursor: pointer;
-            opacity: 0.8;
-            transition: opacity 0.2s, background-color 0.2s;
-        }
-        .delete-char-button:hover {
-            background-color: #e74c3c; 
-            opacity: 1;
-        }
-
-        /* 맵 스타일 */
-        .map-grid-container {
-            margin-top: 15px;
-            border: 1px solid #555; 
-            background-color: #222; 
-            padding: 5px; 
-            border-radius: 4px;
-        }
-        .map-row {
-            display: flex;
-        }
-        .map-cell {
-            width: 50px; 
-            height: 50px; 
-            border: 1px solid #444; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 10px;
-            position: relative;
-            box-sizing: border-box;
-            background-color: #2c2c2c; 
-            transition: background-color 0.2s;
-        }
-        .map-cell:hover {
-            background-color: #383838; 
-        }
-        .map-cell .char-marker {
-            font-size: 12px;
-            font-weight: bold;
-            padding: 2px 4px; 
-            border-radius: 4px; 
-            min-width: 20px; 
-            text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-        }
-        .map-cell .char-marker.ally { background-color: #3498db; color: white; } 
-        .map-cell .char-marker.enemy { background-color: #e74c3c; color: white; } 
-
-        .battle-area {
-            background-color: #1e1e1e; 
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 25px; 
-            border: 1px solid #c09526; 
-        }
-        .battle-log-container {
-            margin-top: 25px; 
-        }
-        .battle-log {
-            background-color: #1c1c1c; /* 로그 배경 더 어둡게 */
-            color: #b0b0b0; 
-            padding: 15px;
-            height: 280px; 
-            overflow-y: scroll;
-            border-radius: 6px; 
-            margin-top: 15px;
-            font-family: 'Courier New', Courier, monospace;
-            white-space: pre-wrap;
-            border: 1px solid #333; 
-            line-height: 1.5; /* 줄 간격 조정 */
-            font-size: 13px; /* 폰트 크기 조정 */
-        }
-        .battle-controls button, .movement-controls button {
-            font-family: 'Gowun Batang', sans-serif;
-            margin: 5px;
-            padding: 10px 15px;
-            font-size: 15px; 
-            cursor: pointer;
-            background: linear-gradient(145deg, #d4af37, #c09526); 
-            color: #1a1a1a; 
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .battle-controls button:hover, .movement-controls button:hover {
-            background: linear-gradient(145deg, #e0a96d, #d4af37); 
-            transform: translateY(-1px);
-            box-shadow: 0 3px 7px rgba(212, 175, 55, 0.2);
-        }
-        .skill-selection {
-            margin-top: 20px;
-            border: 1px solid #7b6020; 
-            padding: 15px;
-            border-radius: 6px; 
-            background-color: #2a2a2a; 
-        }
-        .skill-buttons button {
-            font-family: 'Gowun Batang', sans-serif;
-            background-color: #b8860b; 
-            color: #f5f5f5; 
-            padding: 8px 12px;
-            margin: 5px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-        .skill-buttons button:hover {
-            background-color: #daa520; 
-        }
-        .skill-buttons button:disabled {
+        .button:disabled {
             background: #454545 !important;
             color: #777 !important;
             cursor: not-allowed !important;
             transform: none !important;
             box-shadow: none !important;
         }
+
+        .character-input button { /* 기존 버튼들에도 .button 클래스 적용하면 좋지만, 일단 이렇게 둠 */
+            margin-top: 15px;
+        }
+
+        .character-stats {
+            background-color: rgba(30, 30, 30, 0.85);
+            backdrop-filter: blur(4px);
+            color: var(--color-text-secondary);
+            border: 1px solid var(--color-border-accent);
+            padding: 15px; /* 패딩 증가 */
+            border-radius: 8px; /* 둥글기 증가 */
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5); /* 그림자 강화 */
+            position: relative;
+            margin-bottom: 15px;
+        }
+        .character-stats.selected {
+            border: 2px solid var(--color-primary-gold);
+            background-color: #332e25; /* 선택 시 배경색 (황금색 톤 유지) */
+        }
+        .character-stats p {
+            margin: 7px 0;
+            font-size: 0.95em; /* 폰트 크기 조정 */
+            line-height: 1.5;
+        }
+        .character-stats strong {
+            color: var(--color-primary-gold-lighter);
+            font-weight: 700;
+        }
+        .delete-char-button {
+            position: absolute;
+            top: 10px; /* 위치 조정 */
+            right: 10px; /* 위치 조정 */
+            background-color: var(--color-accent-red);
+            color: white;
+            border: none;
+            border-radius: 50%; /* 원형 버튼 */
+            width: 24px; /* 크기 조정 */
+            height: 24px; /* 크기 조정 */
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.7;
+            transition: all 0.2s;
+        }
+        .delete-char-button:hover {
+            background-color: #d62c1a;
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* 맵 스타일 */
+        .map-grid-container {
+            margin-top: 20px; /* 여백 증가 */
+            border: 1px solid var(--color-border);
+            background-color: #1a1a1a; /* 맵 배경 더 어둡게 */
+            padding: 8px; /* 패딩 증가 */
+            border-radius: 6px; /* 둥글기 증가 */
+        }
+        .map-row {
+            display: flex;
+        }
+        .map-cell {
+            width: 55px; /* 크기 약간 증가 */
+            height: 55px; /* 크기 약간 증가 */
+            border: 1px solid #383838; /* 셀 테두리 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-sizing: border-box;
+            background-color: #252525; /* 셀 배경 */
+            transition: background-color 0.2s;
+        }
+        .map-cell:hover {
+            background-color: #333;
+        }
+        .map-cell .char-marker {
+            font-size: 1em; /* 캐릭터 마커 크기 */
+            font-weight: bold;
+            padding: 4px 6px; /* 패딩 조정 */
+            border-radius: 5px; /* 둥글기 조정 */
+            min-width: 22px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+        }
+        .map-cell .char-marker.ally { background-color: var(--color-accent-blue); color: white; }
+        .map-cell .char-marker.enemy { background-color: var(--color-accent-red); color: white; }
+
+        .battle-area {
+            background-color: var(--color-surface);
+            padding: 25px; /* 패딩 증가 */
+            border-radius: 10px;
+            margin-top: 30px; /* 여백 증가 */
+            border: 1px solid var(--color-primary-gold-darker);
+        }
+        .battle-log-container {
+            margin-top: 30px; /* 여백 증가 */
+        }
+        .battle-log {
+            background-color: #171717; /* 로그 배경 매우 어둡게 */
+            color: var(--color-text-secondary);
+            padding: 20px; /* 패딩 증가 */
+            height: 300px; /* 높이 증가 */
+            overflow-y: auto; /* 필요할 때만 스크롤바 */
+            border-radius: 8px; /* 둥글기 증가 */
+            margin-top: 20px; /* 여백 증가 */
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            border: 1px solid var(--color-border);
+            line-height: 1.6;
+            font-size: 0.9em;
+        }
+        .battle-controls button, .movement-controls button { /* .button 클래스로 대체 고려 */
+            margin: 8px 5px; /* 여백 조정 */
+        }
         
-        /* 스킬 설명창 스타일 (여백 추가) */
+        .skill-selection {
+            margin-top: 25px; /* 여백 증가 */
+            border: 1px solid var(--color-border-accent);
+            padding: 20px; /* 패딩 증가 */
+            border-radius: 8px; /* 둥글기 증가 */
+            background-color: var(--color-surface-alt);
+        }
+        .skill-buttons button { /* .button 클래스 상속 후 개별 조정 가능 */
+            font-family: var(--font-body);
+            background-color: var(--color-primary-gold-darker);
+            color: var(--color-text-primary); /* 글자색 밝게 */
+            padding: 10px 14px; /* 패딩 조정 */
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .skill-buttons button:hover {
+            background-color: var(--color-primary-gold);
+            transform: scale(1.03);
+        }
+        .skill-buttons button:disabled {
+            background: #454545 !important;
+            color: #777 !important;
+        }
+        
         .skill-description-display {
-            margin-top: 15px;    /* 위쪽 외부 여백 */
-            margin-bottom: 15px; /* 아래쪽 외부 여백 추가 */
-            padding: 15px;       /* 내부 상하좌우 여백 증가 */
-            background-color: #282828; 
-            border: 1px solid #444;   
-            border-radius: 4px;
-            font-size: 13px;          
-            min-height: 40px; 
-            color: #c0c0c0;           
+            margin-top: 20px;    /* ⭐ 스킬 설명 위쪽 여백 */
+            margin-bottom: 20px; /* ⭐ 스킬 설명 아래쪽 여백 */
+            padding: 15px;       /* ⭐ 스킬 설명 내부 여백 */
+            background-color: #222526; /* 배경색 약간 변경 */
+            border: 1px solid var(--color-border);
+            border-radius: 6px; /* 둥글기 증가 */
+            font-size: 0.95em; /* 폰트 크기 */
+            min-height: 50px;
+            color: var(--color-text-secondary);
             line-height: 1.5; 
         }
         .skill-description-display strong {
-            color: #d4af37; 
+            color: var(--color-primary-gold-lighter);
         }
         
         .movement-controls {
-            margin-top: 15px; 
-            padding: 10px;
-            background-color: #333; 
-            border-radius: 5px;
-            border: 1px solid #555;
+            margin-top: 20px;
+            padding: 15px; /* 패딩 증가 */
+            background-color: var(--color-surface-alt);
+            border-radius: 6px; /* 둥글기 증가 */
+            border: 1px solid var(--color-border-accent);
         }
         .movement-controls h4 { 
-            font-family: 'Diphylleia', serif; /* 제목 폰트 적용 */
+            font-family: var(--font-title);
             margin-top: 0;
-            margin-bottom: 10px; 
-            color: #d4af37; 
+            margin-bottom: 12px;
+            color: var(--color-primary-gold);
         }
-        .movement-controls button {
-            font-family: 'Gowun Batang', sans-serif;
-            background: #555; 
-            color: #f0e6d2; 
+        .movement-controls button { /* .button 클래스 상속 후 개별 조정 가능 */
+            font-family: var(--font-body);
+            background: #4a4a4a; /* 이동 버튼 배경 */
+            color: var(--color-text-primary);
         }
         .movement-controls button:hover {
-            background: #666;
+            background: #5a5a5a;
         }
         .movement-controls button:disabled {
-            background: #404040 !important;
-            color: #777 !important;
-            cursor: not-allowed !important;
+            background: #383838 !important;
+            color: #666 !important;
         }
 
-        #confirmActionButton {
-            font-family: 'Gowun Batang', sans-serif;
-            background: linear-gradient(145deg, #28a745, #218838);
+        #confirmActionButton { /* .button 클래스 상속 후 개별 조정 가능 */
+            font-family: var(--font-body);
+            background: linear-gradient(145deg, var(--color-accent-green), #1e7e34); /* 초록색 계열 */
             color: white;
-            border: none;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-            transition: background 0.3s ease, transform 0.2s ease;
-            padding: 10px 15px; 
-            font-size: 15px;    
+            /* ... 기존 confirmActionButton 스타일 ... */
+            padding: 12px 20px; /* 패딩 증가 */
+            font-size: 1em;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         
         #confirmActionButton:hover {
-            background: linear-gradient(145deg, #218838, #1e7e34);
+            background: linear-gradient(145deg, #218838, #1c6c2e);
             transform: translateY(-2px);
         }
         
-        /* 화면 폭이 768px 이하일 때 적용될 스타일 */
         @media (max-width: 768px) {
             body {
-                padding: 10px; 
+                padding: 10px;
             }
             .container {
-                padding: 15px; 
+                padding: 15px;
                 margin-bottom: 20px;
             }
             .flex-container {
                 flex-direction: column;
-                align-items: stretch; 
+                align-items: stretch;
             }
             .character-management-area, .map-display-area {
-                flex-basis: auto; 
-                width: 100%; 
+                flex-basis: auto;
+                width: 100%;
                 margin-bottom: 20px;
             }
             .map-display-area {
                 margin-bottom: 0;
             }
             h1 {
-                font-size: 1.8em; 
-                margin-bottom: 20px;
+                font-size: 2em; /* 모바일 제목 조정 */
+                margin-bottom: 25px;
+                padding-bottom: 10px;
             }
             h2 {
-                font-size: 1.3em;
+                font-size: 1.5em; /* 모바일 제목 조정 */
             }
             h3 {
-                font-size: 1.1em;
+                font-size: 1.2em; /* 모바일 제목 조정 */
             }
-            .battle-controls button, .movement-controls button, .skill-buttons button, #confirmActionButton {
-                padding: 12px 10px; 
-                font-size: 14px; 
-            }
-            .map-cell {
-                width: calc((100vw - 40px - 10px) / 5); /* (화면 너비 - 양쪽 body 패딩 - 맵 컨테이너 패딩) / 칸수 */
-                height: calc((100vw - 40px - 10px) / 5);
-                max-width: 60px; /* 최대 크기 제한 약간 늘림 */
-                max-height: 60px; /* 최대 크기 제한 약간 늘림 */
+            .button, .battle-controls button, .movement-controls button, .skill-buttons button, #confirmActionButton {
+                padding: 10px 12px; /* 모바일 버튼 패딩 */
+                font-size: 0.9em; /* 모바일 버튼 폰트 */
             }
              .character-input input[type="text"],
              .character-input input[type="number"],
              .character-input select {
-                padding: 8px;
+                padding: 10px;
              }
+            .map-cell {
+                width: calc((100vw - 40px - 16px) / 5); /* body패딩20+컨테이너패딩15*2 -> body패딩10*2+맵컨테이너패딩8*2 */
+                height: calc((100vw - 40px - 16px) / 5);
+                max-width: 50px; 
+                max-height: 50px; 
+            }
         }
 
-        /* 스크롤바 스타일 (웹킷 브라우저용) */
         ::-webkit-scrollbar {
-            width: 10px; /* 스크롤바 너비 */
-            height: 10px; /* 가로 스크롤바 높이 */
+            width: 10px;
+            height: 10px;
         }
         ::-webkit-scrollbar-track {
-            background: #2c2c2c; /* 트랙 배경 */
+            background: #222526; /* 트랙 배경 어둡게 */
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb {
-            background: #555; /* 스크롤 막대 색상 */
+            background: #555;
             border-radius: 10px;
-            border: 2px solid #2c2c2c; /* 트랙 배경색과 동일한 테두리로 약간의 여백 효과 */
+            border: 2px solid #222526; 
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #d4af37; /* 호버 시 황금색 */
+            background: var(--color-primary-gold-darker);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>마스레이드 전투 시뮬레이션</h1>
+        <h1><span class="material-icons-outlined" style="vertical-align: bottom; font-size: 1.1em; margin-right: 8px;">theater_comedy</span>마스레이드 전투 시뮬레이션</h1>
+
+        <div class="map-display-area">
+            <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">map</span>맵 상황</h2>
+            <div id="mapGridContainer" class="map-grid-container">
+                </div>
+             <div id="mapInfo">
+                </div>
+        </div>
 
         <div class="character-input">
-            <h2>캐릭터 추가</h2>
+            <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">person_add</span>캐릭터 추가</h2>
             <label for="charName">이름:</label>
-            <input type="text" id="charName" value="이름">
+            <input type="text" id="charName" value="용사">
 
             <label for="charType">영감:</label>
             <select id="charType">
@@ -430,57 +466,48 @@
             <label for="charCurrentHp">현재 체력(최대 체력 100과 동일하게 하려면 비워 두세요):</label>
             <input type="number" id="charCurrentHp" placeholder="예: 80">
 
-            <button onclick="addCharacter('ally')">아군 추가</button>
-            <button onclick="addCharacter('enemy')">적군 추가</button>
+            <button onclick="addCharacter('ally')" class="button"><span class="material-icons-outlined">group_add</span>아군 추가</button>
+            <button onclick="addCharacter('enemy')" class="button"><span class="material-icons-outlined">person_add_disabled</span>적군 추가</button>
         </div>
 
         <div class="flex-container">
             <div class="character-management-area">
-                <h2>아군</h2>
+                <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">groups</span>아군</h2>
                 <div id="allyCharacters" class="character-display">
                     <p>아군 캐릭터가 없습니다.</p>
                 </div>
 
-                <h2>적군</h2>
+                <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">bug_report</span>적군</h2>
                 <div id="enemyCharacters" class="character-display">
                     <p>적군 캐릭터가 없습니다.</p>
                 </div>
             </div>
-
-            <div class="map-display-area">
-                <h2>맵 상황</h2>
-                <div id="mapGridContainer" class="map-grid-container">
-                    </div>
-                 <div id="mapInfo">
-                    </div>
             </div>
-        </div>
     </div>
 
     <div class="container battle-area">
-        <h2>전투 진행 및 스킬 선택</h2>
+        <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">sports_kabaddi</span>전투 진행 및 스킬 선택</h2>
         <div class="battle-controls">
-            <button onclick="startBattle()" id="startButton">전투 시작</button>
-            <button onclick="prepareNextTurn()" id="nextTurnButton" style="display: none;">다음 행동 선택</button>
-            <button onclick="executeBattleTurn()" id="executeTurnButton" style="display: none;">턴 실행</button>
+            <button onclick="startBattle()" id="startButton" class="button"><span class="material-icons">play_arrow</span>전투 시작</button>
+            <button onclick="prepareNextTurn()" id="nextTurnButton" style="display: none;" class="button"><span class="material-icons">skip_next</span>다음 행동 선택</button> <button onclick="executeBattleTurn()" id="executeTurnButton" style="display: none;" class="button"><span class="material-icons">double_arrow</span>턴 실행</button>
         </div>
 
         <div id="skillSelectionArea" class="skill-selection" style="display: none;">
-            <h3>스킬/이동 선택: <span id="currentActingCharName"></span></h3>
+            <h3><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">psychology</span>스킬/이동 선택: <span id="currentActingCharName"></span></h3>
             <div id="availableSkills" class="skill-buttons">
                 </div>
             <div id="skillDescriptionArea" class="skill-description-display"> 
                 </div>
             <div class="movement-controls" id="movementControlsArea">
-                <h4>이동 (선택 시 턴 종료)</h4>
+                <h4><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">open_with</span>이동 (선택 시 턴 종료)</h4>
                 </div>
             <p>대상 선택: <span id="selectedTargetName">없음</span></p>
-            <button onclick="confirmAction()" id="confirmActionButton" style="display: none;">행동 확정</button>
+            <button onclick="confirmAction()" id="confirmActionButton" style="display: none;" class="button"><span class="material-icons">check_circle_outline</span>행동 확정</button>
         </div>
     </div>
 
     <div class="container battle-log-container">
-        <h2>전투 로그</h2>
+        <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">receipt_long</span>전투 로그</h2>
         <div class="battle-log" id="battleLog">
             </div>
     </div>
