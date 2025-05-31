@@ -1079,22 +1079,23 @@ console.log(`[DEBUG] executeSingleAction: Attempting to execute skill: ${skill.n
             switch (skill.targetType) {
                 case 'self':
                     if (skill.id === SKILLS.SKILL_PROVOKE.id || skill.id === SKILLS.SKILL_REALITY.id) {
+                        // 이 스킬들은 execute(caster, allies, enemies, battleLog) 시그니처를 사용
                         skillSuccess = skill.execute(caster, actualAllies, actualEnemies, logToBattleLog);
-                    } else { // SKILL_RESILIENCE, SKILL_REVERSAL 등
-                        // 이 스킬들의 execute 시그니처가 (caster, target, allies, enemies, battleLog) 이고 target이 caster 자신이라면
+                    } else { // SKILL_RESILIENCE, SKILL_REVERSAL 등. 이들은 execute(caster, target=caster, allies, enemies, battleLog)
                         skillSuccess = skill.execute(caster, caster, actualAllies, actualEnemies, logToBattleLog);
                     }
                     break;
-                case 'all_enemies': 
+                case 'all_enemies': // 예: SKILL_TRUTH는 execute(caster, enemies, battleLog) 시그니처
                     skillSuccess = skill.execute(caster, actualEnemies, logToBattleLog);
                     break;
-                case 'all_allies': 
+                case 'all_allies': // 예: SKILL_COUNTER는 execute(caster, allies, enemies, battleLog) 시그니처
                     skillSuccess = skill.execute(caster, actualAllies, actualEnemies, logToBattleLog);
                     break;
-                case 'single_ally_or_self': // ⭐ '허상' 스킬 (SKILL_ILLUSION)
-                case 'single_enemy':        // ⭐ '서막', '절정', '간파' 스킬
-                case 'single_ally':         // ⭐ '허무' 스킬
-                    // 이 스킬들은 execute(caster, target, allies, enemies, battleLog) 시그니처를 따릅니다.
+                // ⭐ '간파'(single_enemy)와 '허상'(single_ally_or_self)이 여기에 해당됩니다. ⭐
+                case 'single_enemy':
+                case 'single_ally_or_self':
+                case 'single_ally':
+                    // 이 스킬들은 대부분 execute(caster, target, allies, enemies, battleLog) 시그니처를 가집니다.
                     // mainTarget이 target으로, actualAllies가 allies로, actualEnemies가 enemies로, logToBattleLog가 battleLog로 매칭됩니다.
                     skillSuccess = skill.execute(caster, mainTarget, actualAllies, actualEnemies, logToBattleLog);
                     break;
@@ -1103,10 +1104,12 @@ console.log(`[DEBUG] executeSingleAction: Attempting to execute skill: ${skill.n
                     break;
                 default:
                     console.warn(`[WARN] Unknown/Unhandled skill targetType: ${skill.targetType} for skill ${skill.name}. Using default call signature.`);
+                    // 가장 일반적인 (가장 많은 파라미터를 가진) 형태로 호출 시도
                     skillSuccess = skill.execute(caster, mainTarget, subTarget, actualAllies, actualEnemies, logToBattleLog);
                     break;
             }
             console.log(`[DEBUG] executeSingleAction: Skill ${skill.name} execution finished. skillSuccess = ${skillSuccess}`);
+
         }
 
         // skillSuccess가 명시적으로 false인 경우만 실패로 간주
