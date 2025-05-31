@@ -920,6 +920,10 @@ function selectSkill(skillId, caster) {
     const skill = SKILLS[skillId];
     logToBattleLog(`${caster.name}이(가) [${skill.name}] 스킬 선택. 대상을 선택해 주세요.`);
 
+    if (skillDescriptionArea) {
+        skillDescriptionArea.innerHTML = `<strong>${skill.name}</strong>: ${skill.description || '설명 없음'}`;
+    }
+    
     if (skill.targetSelection === 'self' || skill.targetType === 'all_allies' || skill.targetType === 'all_enemies') {
         selectedAction.targetId = caster.id;
         selectedTargetName.textContent = skill.targetSelection === 'self' ? caster.name : '전체';
