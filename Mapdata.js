@@ -1,6 +1,6 @@
 // --- 0. 맵 상수 정의 ---
-const MAP_WIDTH = 5;
-const MAP_HEIGHT = 5;
+// const MAP_WIDTH = 5;
+// const MAP_HEIGHT = 5;
 
 // --- 1. 맵 및 적 데이터 (추후 CSV 파일 내용을 바탕으로 채워질 예정) ---
 const ENEMY_TEMPLATES = {
