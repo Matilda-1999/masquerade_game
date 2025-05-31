@@ -323,8 +323,18 @@ const SKILLS = {
 // HTML 요소 가져오기 헬퍼 함수
 function getElement(id) {
     return document.getElementById(id);
-}
 
+// --- 스킬 선택 관련 UI 요소 --- (getElement를 사용하도록 수정)
+const skillSelectionArea = getElement('skillSelectionArea');
+const currentActingCharName = getElement('currentActingCharName');
+const availableSkillsDiv = getElement('availableSkills');
+const selectedTargetName = getElement('selectedTargetName');
+const confirmSkillButton = getElement('confirmSkillButton'); // index.html에서는 confirmActionButton으로 변경 예정이거나, 이 ID를 써야 함
+const executeTurnButton = getElement('executeTurnButton');
+const startButton = getElement('startButton');
+const nextTurnButton = getElement('nextTurnButton');
+const battleLogDiv = getElement('battleLog'); // 전투 로그 div
+    
 // 전투 로그에 메시지 출력
 const battleLogDiv = getElement('battleLog');
 function logToBattleLog(message) {
