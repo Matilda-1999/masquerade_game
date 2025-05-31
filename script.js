@@ -1032,27 +1032,42 @@ function confirmAction() {
     if (!caster) { alert('시전자를 찾을 수 없습니다.'); return; }
 
     let actionDetails = { caster: caster, type: selectedAction.type };
+    let targetDescription = "정보 없음"
 
     if (selectedAction.type === 'skill') {
         const skill = SKILLS[selectedAction.skillId];
         if (!skill) { alert('선택된 스킬 정보를 찾을 수 없습니다.'); return; }
         actionDetails.skill = skill;
 
-        if (skill.targetSelection !== 'all_allies' && skill.targetSelection !== 'all_enemies' && skill.targetSelection !== 'self') {
-             actionDetails.mainTarget = findCharacterById(selectedAction.targetId);
-             if (skill.targetSelection === 'two_enemies') {
-                 actionDetails.subTarget = findCharacterById(selectedAction.subTargetId);
-                 if (!actionDetails.subTarget) { alert('두 번째 대상을 찾을 수 없습니다.'); return; }
-             }
-             if (!actionDetails.mainTarget && skill.targetSelection !== 'self') {
-                 alert('주요 대상을 찾을 수 없습니다.'); return;
-             }
-        } else if (skill.targetSelection === 'self') {
+        if (skill.targetSelection === 'self') {
+            targetDescription = caster.name; // 자신 대상
             actionDetails.mainTarget = caster;
+        } else if (skill.targetSelection === 'all_allies' || skill.targetSelection === 'all_enemies') {
+            targetDescription = "전체 대상";
+            // mainTarget 등은 execute 함수 내에서 allies/enemies 리스트로 처리됨
+        } else if (selectedAction.targetId) { // 단일 대상 또는 다중 대상의 첫 번째 대상
+            const mainTargetObj = findCharacterById(selectedAction.targetId);
+            if (mainTargetObj) {
+                targetDescription = mainTargetObj.name;
+            } else {
+                targetDescription = "알 수 없는 대상"; // 대상 ID는 있지만 객체를 찾지 못한 경우
+            }
+            actionDetails.mainTarget = mainTargetObj;
+
+            if (skill.targetSelection === 'two_enemies' && selectedAction.subTargetId) {
+                const subTargetObj = findCharacterById(selectedAction.subTargetId);
+                if (subTargetObj) {
+                    targetDescription += `, ${subTargetObj.name}`; // 부가 대상 이름 추가
+                }
+                actionDetails.subTarget = subTargetObj;
+            }
+        } else {
+            // 대상을 선택해야 하는 스킬인데 targetId가 없는 경우
+            targetDescription = "대상 미선택";
         }
-        logToBattleLog(`✦준비✦ <span class="math-inline">\{caster\.name\}, \[</span>{skill.name}] 스킬 사용 준비 완료. 대상: ${targetDescription}`);
-    } else if (selectedAction.type === 'move') {
-        actionDetails.moveDelta = selectedAction.moveDelta;
+        // 수정된 로그
+        logToBattleLog(`✦준비✦ ${caster.name}, [${skill.name}] 스킬 사용 준비. (대상: ${targetDescription})`);
+        
          // 이동 시 경계 및 점유 재확인
         const targetX = caster.posX + selectedAction.moveDelta.dx;
         const targetY = caster.posY + selectedAction.moveDelta.dy;
