@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✦ 마스레이드 전투 시뮬레이터 ✦</title>
+    <title>마스레이드 전투 시뮬레이터</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,7 +39,7 @@
             align-items: center;
             padding: 20px;
             margin: 0;
-            line-height: 1.6; /* 기본 줄 간격 */
+            line-height: 1.6;
         }
         .container {
             background-color: var(--color-surface);
@@ -52,31 +52,31 @@
             border: 1px solid var(--color-primary-gold-darker);
         }
         
-        h1, h2, h3, h4 { /* h4 추가 */
+        h1, h2, h3, h4 {
             font-family: var(--font-title);
             color: var(--color-primary-gold);
             text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
         }
-        h1 { /* 제목 강조 */
+        h1 {
             text-align: center;
-            margin-bottom: 35px; /* 여백 증가 */
-            font-size: 2.5em; /* 크기 증가 */
-            letter-spacing: 1px; /* 자간 조정 */
+            margin-bottom: 35px;
+            font-size: 2.5em;
+            letter-spacing: 1px;
             border-bottom: 2px solid var(--color-primary-gold-darker);
             padding-bottom: 15px;
         }
         h2 {
-            margin-top: 30px; /* 여백 증가 */
-            margin-bottom: 20px; /* 여백 증가 */
+            margin-top: 30px;
+            margin-bottom: 20px;
             border-bottom: 1px solid var(--color-border);
             padding-bottom: 10px;
-            font-size: 1.8em; /* 크기 증가 */
+            font-size: 1.8em;
         }
         h3 {
-            margin-top: 25px; /* 여백 증가 */
-            margin-bottom: 15px; /* 여백 증가 */
-            font-size: 1.4em; /* 크기 증가 */
-            color: var(--color-primary-gold-lighter); /* 약간 다른 금색 */
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            color: var(--color-primary-gold-lighter);
         }
         h4 {
             font-size: 1.1em;
@@ -84,27 +84,44 @@
             margin-bottom: 10px;
         }
         
-        .flex-container {
+        /* ⭐ 캐릭터 카드 2단 구성을 위한 래퍼 스타일 ⭐ */
+        .character-cards-wrapper {
             display: flex;
             justify-content: space-between;
-            gap: 25px;
+            gap: 25px; /* 아군 카드 영역과 적군 카드 영역 사이 간격 */
+            margin-top: 25px; /* 맵 아래, 이 영역 위 간격 */
+        }
+        .ally-card-area, .enemy-card-area {
+            flex-basis: 48%; /* 각 카드 영역이 절반씩 차지 */
+            background-color: var(--color-surface-alt); /* 배경색은 character-display와 유사하게 */
+            border: 1px solid var(--color-border-accent);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .ally-card-area h2, .enemy-card-area h2 { /* 카드 영역 내부의 h2 마진 조정 */
+            margin-top: 0; 
+            padding-bottom: 8px;
+            font-size: 1.5em; /* 카드 영역 제목 크기 조정 */
         }
         
-        .character-management-area, .map-display-area {
-            flex-basis: 48%;
+        .character-input, .character-display { /* .character-display는 카드 리스트를 감싸는 div */
+            background-color: transparent; /* 내부 character-display는 배경 없음 (부모가 배경 가짐) */
+            border: none; /* 내부 character-display는 테두리 없음 */
+            padding: 0; /* 내부 character-display는 패딩 없음 */
+            margin-bottom: 0; /* 내부 character-display는 마진 없음 */
         }
-        
-        .character-input, .character-display {
+        .character-input { /* 캐릭터 추가 영역은 기존 스타일 유지 가능 */
             background-color: var(--color-surface-alt);
             border: 1px solid var(--color-border-accent);
-            padding: 20px; /* 패딩 증가 */
-            margin-bottom: 25px; /* 여백 증가 */
-            border-radius: 8px; /* 둥글기 증가 */
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
         }
+
         .character-input label {
             display: block;
-            margin-bottom: 10px; /* ⭐ '캐릭터 추가' 요소들 사이 여백 증가 */
-            font-size: 1em; /* 폰트 크기 1em으로 통일 */
+            margin-bottom: 10px;
+            font-size: 1em;
             color: var(--color-text-secondary);
             font-weight: bold;
         }
@@ -112,14 +129,14 @@
         .character-input select,
         .character-input input[type="text"],
         .character-input input[type="number"] {
-            background-color: #383838; /* 입력 필드 배경 약간 밝게 */
+            background-color: #383838;
             border: 1px solid var(--color-border);
-            border-radius: 5px; /* 둥글기 증가 */
-            padding: 12px; /* 패딩 증가 */
+            border-radius: 5px;
+            padding: 12px;
             color: var(--color-text-primary);
             width: calc(100% - 24px); 
             box-sizing: border-box;
-            margin-bottom: 15px; /* ⭐ '캐릭터 추가' 요소들 사이 여백 증가 */
+            margin-bottom: 15px;
             font-size: 1em;
         }
         .character-input input[type="text"]:focus,
@@ -130,11 +147,10 @@
             outline: none;
         }
         
-        /* 버튼 공통 스타일 */
         .button { 
             font-family: var(--font-body);
             background: linear-gradient(145deg, var(--color-primary-gold-lighter), var(--color-primary-gold-darker));
-            color: #101010; /* 매우 어두운 색으로 대비 강화 */
+            color: #101010;
             padding: 10px 20px;
             border: none;
             border-radius: 6px;
@@ -145,7 +161,7 @@
             transition: all 0.2s ease-out;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            display: inline-flex; /* 아이콘과 텍스트 정렬 위함 */
+            display: inline-flex;
             align-items: center;
             justify-content: center;
         }
@@ -167,7 +183,7 @@
             box-shadow: none !important;
         }
 
-        .character-input button { /* 기존 버튼들에도 .button 클래스 적용하면 좋지만, 일단 이렇게 둠 */
+        .character-input button {
             margin-top: 15px;
         }
 
@@ -176,19 +192,19 @@
             backdrop-filter: blur(4px);
             color: var(--color-text-secondary);
             border: 1px solid var(--color-border-accent);
-            padding: 15px; /* 패딩 증가 */
-            border-radius: 8px; /* 둥글기 증가 */
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5); /* 그림자 강화 */
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
             position: relative;
             margin-bottom: 15px;
         }
         .character-stats.selected {
             border: 2px solid var(--color-primary-gold);
-            background-color: #332e25; /* 선택 시 배경색 (황금색 톤 유지) */
+            background-color: #332e25;
         }
         .character-stats p {
             margin: 7px 0;
-            font-size: 0.95em; /* 폰트 크기 조정 */
+            font-size: 0.95em;
             line-height: 1.5;
         }
         .character-stats strong {
@@ -197,14 +213,14 @@
         }
         .delete-char-button {
             position: absolute;
-            top: 10px; /* 위치 조정 */
-            right: 10px; /* 위치 조정 */
+            top: 10px;
+            right: 10px;
             background-color: var(--color-accent-red);
             color: white;
             border: none;
-            border-radius: 50%; /* 원형 버튼 */
-            width: 24px; /* 크기 조정 */
-            height: 24px; /* 크기 조정 */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
             font-size: 14px;
             cursor: pointer;
             display: flex;
@@ -220,238 +236,121 @@
         }
 
         /* 맵 스타일 */
+        .map-display-area { /* 맵 영역 컨테이너 */
+            width: 100%; /* 부모 너비에 맞춤 */
+            margin-bottom: 25px; /* 아래 캐릭터 카드와의 간격 */
+        }
         .map-grid-container {
-            margin-top: 20px; /* 여백 증가 */
+            margin-top: 15px; /* 맵 제목과의 간격 */
             border: 1px solid var(--color-border);
-            background-color: #1a1a1a; /* 맵 배경 더 어둡게 */
-            padding: 8px; /* 패딩 증가 */
-            border-radius: 6px; /* 둥글기 증가 */
+            background-color: #1a1a1a;
+            padding: 8px;
+            border-radius: 6px;
+            display: inline-block; /* 맵 크기에 맞게 줄어들도록 */
         }
         .map-row {
             display: flex;
         }
         .map-cell {
-            width: 55px; /* 크기 약간 증가 */
-            height: 55px; /* 크기 약간 증가 */
-            border: 1px solid #383838; /* 셀 테두리 */
+            width: 65px;  /* ⭐ 맵 셀 너비 증가 (3글자 보이도록) ⭐ */
+            height: 65px; /* ⭐ 맵 셀 높이 증가 ⭐ */
+            border: 1px solid #383838;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
             box-sizing: border-box;
-            background-color: #252525; /* 셀 배경 */
+            background-color: #252525;
             transition: background-color 0.2s;
         }
         .map-cell:hover {
             background-color: #333;
         }
         .map-cell .char-marker {
-            font-size: 1em; /* 캐릭터 마커 크기 */
+            font-size: 0.85em; /* ⭐ 마커 내 글자 크기 (셀 크기에 맞게 조절) ⭐ */
             font-weight: bold;
-            padding: 4px 6px; /* 패딩 조정 */
-            border-radius: 5px; /* 둥글기 조정 */
-            min-width: 22px;
+            padding: 5px;    /* ⭐ 마커 내부 패딩 증가 ⭐ */
+            border-radius: 5px;
+            min-width: 50px; /* ⭐ 마커 최소 너비 증가 (3글자+여백) ⭐ */
             text-align: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+            overflow: hidden; /* 이름 길 경우 숨김 */
+            text-overflow: ellipsis; /* 이름 길 경우 ... 표시 (한 줄일 때만 동작) */
+            white-space: nowrap; /* 이름이 길어도 한 줄로 */
         }
         .map-cell .char-marker.ally { background-color: var(--color-accent-blue); color: white; }
         .map-cell .char-marker.enemy { background-color: var(--color-accent-red); color: white; }
 
         .battle-area {
             background-color: var(--color-surface);
-            padding: 25px; /* 패딩 증가 */
+            padding: 25px;
             border-radius: 10px;
-            margin-top: 30px; /* 여백 증가 */
+            margin-top: 0; /* 캐릭터 카드 바로 아래 붙도록 조정 */
             border: 1px solid var(--color-primary-gold-darker);
         }
-        .battle-log-container {
-            margin-top: 30px; /* 여백 증가 */
-        }
-        .battle-log {
-            background-color: #171717; /* 로그 배경 매우 어둡게 */
-            color: var(--color-text-secondary);
-            padding: 20px; /* 패딩 증가 */
-            height: 300px; /* 높이 증가 */
-            overflow-y: auto; /* 필요할 때만 스크롤바 */
-            border-radius: 8px; /* 둥글기 증가 */
-            margin-top: 20px; /* 여백 증가 */
-            font-family: 'Courier New', Courier, monospace;
-            white-space: pre-wrap;
-            border: 1px solid var(--color-border);
-            line-height: 1.6;
-            font-size: 0.9em;
-        }
-        .battle-controls button, .movement-controls button { /* .button 클래스로 대체 고려 */
-            margin: 8px 5px; /* 여백 조정 */
-        }
-        
-        .skill-selection {
-            margin-top: 25px; /* 여백 증가 */
-            border: 1px solid var(--color-border-accent);
-            padding: 20px; /* 패딩 증가 */
-            border-radius: 8px; /* 둥글기 증가 */
-            background-color: var(--color-surface-alt);
-        }
-        .skill-buttons button { /* .button 클래스 상속 후 개별 조정 가능 */
-            font-family: var(--font-body);
-            background-color: var(--color-primary-gold-darker);
-            color: var(--color-text-primary); /* 글자색 밝게 */
-            padding: 10px 14px; /* 패딩 조정 */
-            margin: 5px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.2s, transform 0.1s;
-        }
-        .skill-buttons button:hover {
-            background-color: var(--color-primary-gold);
-            transform: scale(1.03);
-        }
-        .skill-buttons button:disabled {
-            background: #454545 !important;
-            color: #777 !important;
-        }
-        
-        .skill-description-display {
-            margin-top: 20px;    /* ⭐ 스킬 설명 위쪽 여백 */
-            margin-bottom: 20px; /* ⭐ 스킬 설명 아래쪽 여백 */
-            padding: 15px;       /* ⭐ 스킬 설명 내부 여백 */
-            background-color: #222526; /* 배경색 약간 변경 */
-            border: 1px solid var(--color-border);
-            border-radius: 6px; /* 둥글기 증가 */
-            font-size: 0.95em; /* 폰트 크기 */
-            min-height: 50px;
-            color: var(--color-text-secondary);
-            line-height: 1.5; 
-        }
-        .skill-description-display strong {
-            color: var(--color-primary-gold-lighter);
-        }
-        
-        .movement-controls {
-            margin-top: 20px;
-            padding: 15px; /* 패딩 증가 */
-            background-color: var(--color-surface-alt);
-            border-radius: 6px; /* 둥글기 증가 */
-            border: 1px solid var(--color-border-accent);
-        }
-        .movement-controls h4 { 
-            font-family: var(--font-title);
-            margin-top: 0;
-            margin-bottom: 12px;
-            color: var(--color-primary-gold);
-        }
-        .movement-controls button { /* .button 클래스 상속 후 개별 조정 가능 */
-            font-family: var(--font-body);
-            background: #4a4a4a; /* 이동 버튼 배경 */
-            color: var(--color-text-primary);
-        }
-        .movement-controls button:hover {
-            background: #5a5a5a;
-        }
-        .movement-controls button:disabled {
-            background: #383838 !important;
-            color: #666 !important;
-        }
-
-        #confirmActionButton { /* .button 클래스 상속 후 개별 조정 가능 */
-            font-family: var(--font-body);
-            background: linear-gradient(145deg, var(--color-accent-green), #1e7e34); /* 초록색 계열 */
-            color: white;
-            /* ... 기존 confirmActionButton 스타일 ... */
-            padding: 12px 20px; /* 패딩 증가 */
-            font-size: 1em;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        #confirmActionButton:hover {
-            background: linear-gradient(145deg, #218838, #1c6c2e);
-            transform: translateY(-2px);
-        }
+        /* ... (나머지 CSS는 이전과 유사하게 유지) ... */
+        .battle-log-container { margin-top: 30px; }
+        .battle-log { background-color: #171717; color: var(--color-text-secondary); padding: 20px; height: 300px; overflow-y: auto; border-radius: 8px; margin-top: 20px; font-family: 'Courier New', Courier, monospace; white-space: pre-wrap; border: 1px solid var(--color-border); line-height: 1.6; font-size: 0.9em; }
+        .battle-controls button, .movement-controls button { font-family: var(--font-body); margin: 8px 5px; }
+        .skill-selection { margin-top: 25px; border: 1px solid var(--color-border-accent); padding: 20px; border-radius: 8px; background-color: var(--color-surface-alt); }
+        .skill-buttons button { font-family: var(--font-body); background-color: var(--color-primary-gold-darker); color: var(--color-text-primary); padding: 10px 14px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: background-color 0.2s, transform 0.1s; }
+        .skill-buttons button:hover { background-color: var(--color-primary-gold); transform: scale(1.03); }
+        .skill-buttons button:disabled { background: #454545 !important; color: #777 !important; }
+        .skill-description-display { margin-top: 20px; margin-bottom: 20px; padding: 15px; background-color: #222526; border: 1px solid var(--color-border); border-radius: 6px; font-size: 0.95em; min-height: 50px; color: var(--color-text-secondary); line-height: 1.5; }
+        .skill-description-display strong { color: var(--color-primary-gold-lighter); }
+        .movement-controls { margin-top: 20px; padding: 15px; background-color: var(--color-surface-alt); border-radius: 6px; border: 1px solid var(--color-border-accent); }
+        .movement-controls h4 { font-family: var(--font-title); margin-top: 0; margin-bottom: 12px; color: var(--color-primary-gold); }
+        .movement-controls button { font-family: var(--font-body); background: #4a4a4a; color: var(--color-text-primary); }
+        .movement-controls button:hover { background: #5a5a5a; }
+        .movement-controls button:disabled { background: #383838 !important; color: #666 !important; }
+        #confirmActionButton { font-family: var(--font-body); background: linear-gradient(145deg, var(--color-accent-green), #1e7e34); color: white; padding: 12px 20px; font-size: 1em; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); transition: background 0.3s ease, transform 0.2s ease; border:none; }
+        #confirmActionButton:hover { background: linear-gradient(145deg, #218838, #1c6c2e); transform: translateY(-2px); }
         
         @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            .container {
-                padding: 15px;
-                margin-bottom: 20px;
-            }
-            .flex-container {
+            body { padding: 10px; }
+            .container { padding: 15px; margin-bottom: 20px; }
+            .character-cards-wrapper { /* ⭐ 모바일에서 카드 영역 세로 정렬 ⭐ */
                 flex-direction: column;
-                align-items: stretch;
+                align-items: stretch; 
             }
-            .character-management-area, .map-display-area {
+            .ally-card-area, .enemy-card-area { /* ⭐ 모바일에서 카드 영역 너비 100% ⭐ */
                 flex-basis: auto;
                 width: 100%;
                 margin-bottom: 20px;
             }
-            .map-display-area {
-                margin-bottom: 0;
+             .map-display-area { /* 맵 영역은 이미 부모 너비 100% 이므로 특별한 변경 없음 */
+                width: 100%;
+                margin-bottom: 20px;
             }
-            h1 {
-                font-size: 2em; /* 모바일 제목 조정 */
-                margin-bottom: 25px;
-                padding-bottom: 10px;
-            }
-            h2 {
-                font-size: 1.5em; /* 모바일 제목 조정 */
-            }
-            h3 {
-                font-size: 1.2em; /* 모바일 제목 조정 */
-            }
-            .button, .battle-controls button, .movement-controls button, .skill-buttons button, #confirmActionButton {
-                padding: 10px 12px; /* 모바일 버튼 패딩 */
-                font-size: 0.9em; /* 모바일 버튼 폰트 */
-            }
-             .character-input input[type="text"],
-             .character-input input[type="number"],
-             .character-input select {
-                padding: 10px;
-             }
+            h1 { font-size: 2em; margin-bottom: 25px; padding-bottom: 10px; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.2em; }
+            .button, .battle-controls button, .movement-controls button, .skill-buttons button, #confirmActionButton { padding: 10px 12px; font-size: 0.9em; }
+            .character-input input[type="text"], .character-input input[type="number"], .character-input select { padding: 10px; }
             .map-cell {
-                width: calc((100vw - 40px - 16px) / 5); /* body패딩20+컨테이너패딩15*2 -> body패딩10*2+맵컨테이너패딩8*2 */
-                height: calc((100vw - 40px - 16px) / 5);
-                max-width: 50px; 
-                max-height: 50px; 
+                width: calc((100vw - 20px - 16px - 10px) / 5); /* (화면너비 - body패딩*2 - 맵컨테이너패딩*2 - row간격*4) / 칸수 */
+                height: calc((100vw - 20px - 16px - 10px) / 5);
+                max-width: 55px; /* 모바일 최대 크기 */
+                max-height: 55px;
+            }
+            .map-cell .char-marker {
+                font-size: 0.8em;
+                min-width: 35px;
+                padding: 3px;
             }
         }
 
-        ::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #222526; /* 트랙 배경 어둡게 */
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #555;
-            border-radius: 10px;
-            border: 2px solid #222526; 
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--color-primary-gold-darker);
-        }
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: #222526; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #555; border-radius: 10px; border: 2px solid #222526; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--color-primary-gold-darker); }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1><span class="material-icons-outlined" style="vertical-align: bottom; font-size: 1.1em; margin-right: 8px;">theater_comedy</span>마스레이드 전투 시뮬레이션</h1>
-
-        <div class="map-display-area">
-            <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">map</span>✧ 맵 상황</h2>
-            <div id="mapGridContainer" class="map-grid-container">
-                </div>
-             <div id="mapInfo">
-                </div>
-        </div>
+    <div class="container"> <h1><span class="material-icons-outlined" style="vertical-align: bottom; font-size: 1.1em; margin-right: 8px;">theater_comedy</span>마스레이드 전투 시뮬레이션</h1>
 
         <div class="character-input">
-            <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">person_add</span>✧ 캐릭터 추가</h2>
+            <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">person_add</span>캐릭터 추가</h2>
             <label for="charName">이름:</label>
             <input type="text" id="charName" value="용사">
 
@@ -470,23 +369,31 @@
             <button onclick="addCharacter('enemy')" class="button"><span class="material-icons-outlined">person_add_disabled</span>적군 추가</button>
         </div>
 
-        <div class="flex-container">
-            <div class="character-management-area">
+        <div class="map-display-area">
+            <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">map</span>맵 상황</h2>
+            <div id="mapGridContainer" class="map-grid-container">
+                </div>
+             <div id="mapInfo">
+                </div>
+        </div>
+        
+        <div class="character-cards-wrapper">
+            <div class="ally-card-area">
                 <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">groups</span>아군</h2>
                 <div id="allyCharacters" class="character-display">
                     <p>아군 캐릭터가 없습니다.</p>
                 </div>
+            </div>
 
+            <div class="enemy-card-area">
                 <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">bug_report</span>적군</h2>
                 <div id="enemyCharacters" class="character-display">
                     <p>적군 캐릭터가 없습니다.</p>
                 </div>
             </div>
-            </div>
-    </div>
+        </div>
 
-    <div class="container battle-area">
-        <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">sports_kabaddi</span>✧ 전투 진행 및 스킬 선택</h2>
+    </div> <div class="container battle-area"> <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">sports_kabaddi</span>전투 진행 및 스킬 선택</h2>
         <div class="battle-controls">
             <button onclick="startBattle()" id="startButton" class="button"><span class="material-icons">play_arrow</span>전투 시작</button>
             <button onclick="prepareNextTurn()" id="nextTurnButton" style="display: none;" class="button"><span class="material-icons">skip_next</span>다음 행동 선택</button> <button onclick="executeBattleTurn()" id="executeTurnButton" style="display: none;" class="button"><span class="material-icons">double_arrow</span>턴 실행</button>
@@ -506,8 +413,7 @@
         </div>
     </div>
 
-    <div class="container battle-log-container">
-        <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">receipt_long</span>✧ 전투 로그</h2>
+    <div class="container battle-log-container"> <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">receipt_long</span>전투 로그</h2>
         <div class="battle-log" id="battleLog">
             </div>
     </div>
