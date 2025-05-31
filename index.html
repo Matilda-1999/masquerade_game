@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마스레이드 전투 시뮬레이터</title>
+    <style>
+        /* CSS: 웹 페이지 꾸미는 부분 */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 80%;
+            max-width: 900px;
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .character-input, .character-display {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .character-input label, .character-input select, .character-input input {
+            display: block;
+            margin-bottom: 8px;
+        }
+        .character-input button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .character-input button:hover {
+            background-color: #45a049;
+        }
+        .character-stats { /* 추가: 각 캐릭터 카드 스타일 */
+            border: 1px solid #cceeff;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: #e6f7ff;
+        }
+        .character-stats.selected { /* 추가: 선택된 캐릭터 카드 스타일 */
+            border: 2px solid #007bff;
+            background-color: #cfe8ff;
+        }
+        .character-stats p {
+            margin: 5px 0;
+        }
+        .battle-area {
+            background-color: #e0f2f7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .battle-log {
+            background-color: #333;
+            color: #eee;
+            padding: 15px;
+            height: 200px;
+            overflow-y: scroll;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap; /* 줄바꿈 유지 */
+        }
+        .battle-controls button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .battle-controls button:hover {
+            background-color: #0056b3;
+        }
+        .skill-selection { /* 추가: 스킬 선택 영역 스타일 */
+            margin-top: 20px;
+            border: 2px solid #007bff;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #e0f2f7;
+        }
+        .skill-buttons button { /* 추가: 스킬 버튼 스타일 */
+            background-color: #28a745;
+            color: white;
+            padding: 8px 12px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .skill-buttons button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>마스레이드 전투 시뮬레이터</h1>
+
+        <h2>캐릭터 추가</h2>
+        <div class="character-input">
+            <label for="charName">이름:</label>
+            <input type="text" id="charName" value="용사">
+
+            <label for="charType">영감:</label>
+            <select id="charType">
+                <option value="천체">천체</option>
+                <option value="암석">암석</option>
+                <option value="야수">야수</option>
+                <option value="나무">나무</option>
+            </select>
+            <button onclick="addCharacter('ally')">아군 추가</button>
+            <button onclick="addCharacter('enemy')">적군 추가</button>
+        </div>
+
+        <h2>아군</h2>
+        <div id="allyCharacters" class="character-display">
+            <p>아군 캐릭터가 없습니다.</p>
+        </div>
+
+        <h2>적군</h2>
+        <div id="enemyCharacters" class="character-display">
+            <p>적군 캐릭터가 없습니다.</p>
+        </div>
+    </div>
+
+    <div class="container battle-area">
+        <h2>전투 상황</h2>
+        <div class="battle-controls">
+            <button onclick="startBattle()" id="startButton">전투 시작</button>
+            <button onclick="prepareNextTurn()" id="nextTurnButton">다음 턴 (스킬 선택)</button> 
+            <button onclick="executeBattleTurn()" id="executeTurnButton" style="display: none;">턴 실행</button>
+        </div>
+        
+        <div id="skillSelectionArea" class="skill-selection" style="display: none;">
+            <h3>스킬 선택: <span id="currentActingCharName"></span></h3>
+            <div id="availableSkills" class="skill-buttons">
+                </div>
+            <p>대상 선택: <span id="selectedTargetName">없음</span></p>
+            <button onclick="confirmSkillSelection()" id="confirmSkillButton" style="display: none;">이 스킬 사용!</button>
+        </div>
+
+        <div class="battle-log" id="battleLog">
+            </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
