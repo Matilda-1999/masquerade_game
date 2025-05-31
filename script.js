@@ -821,6 +821,11 @@ function prepareNewTurnCycle() {
     executeTurnButton.style.display = 'none';
     nextTurnButton.style.display = 'block';    // '다음 턴 (스킬/이동 선택)' 버튼 표시 (실제로는 행동 선택 시작 버튼)
 
+    if(skillSelectionArea) skillSelectionArea.style.display = 'none';
+    if(executeTurnButton) executeTurnButton.style.display = 'none';
+    if(nextTurnButton) nextTurnButton.style.display = 'block';
+    if(skillDescriptionArea) skillDescriptionArea.innerHTML = ''; // 새 턴 준비 시 설명 영역 초기화
+    
     // 첫 번째 아군의 행동 선택 UI를 보여주도록
     showSkillSelectionForNextAlly();
 }
@@ -946,6 +951,8 @@ function selectMove(moveDelta, caster) {
          logToBattleLog("다른 캐릭터가 있는 곳으로 이동할 수 없습니다."); return;
     }
 
+    if (skillDescriptionArea) skillDescriptionArea.innerHTML = '이동이 선택되었습니다.'; // 이동 선택 시 설명 영역 업데이트
+    
     selectedAction.type = 'move';
     selectedAction.skillId = null;
     selectedAction.targetId = null;
@@ -1052,6 +1059,8 @@ function confirmAction() {
         logToBattleLog(`✅ ${caster.name}의 이동: 대기열 추가.`);
     }
 
+    if (skillDescriptionArea) skillDescriptionArea.innerHTML = ''; // 행동 확정 후 설명 영역 초기화
+    
     playerActionsQueue.push(actionDetails);
     currentActingCharacterIndex++;
     // showSkillSelectionForNextAlly(); // 이 호출은 prepareNextTurn으로 대체
@@ -1098,7 +1107,7 @@ console.log(`[DEBUG] executeSingleAction: Attempting to execute skill: ${skill.n
                 case 'all_allies': // 예: SKILL_COUNTER는 execute(caster, allies, enemies, battleLog) 시그니처
                     skillSuccess = skill.execute(caster, actualAllies, actualEnemies, logToBattleLog);
                     break;
-                // ⭐ '간파'(single_enemy)와 '허상'(single_ally_or_self)이 여기에 해당됩니다. ⭐
+                // '간파'(single_enemy)와 '허상'(single_ally_or_self)
                 case 'single_enemy':
                 case 'single_ally_or_self':
                 case 'single_ally':
@@ -1165,9 +1174,13 @@ async function executeBattleTurn() {
     if (!isBattleStarted) { alert('전투를 시작해 주세요. (executeBattleTurn)'); return; }
     const aliveAlliesCount = allyCharacters.filter(c => c.isAlive).length;
     if (playerActionsQueue.length < aliveAlliesCount && aliveAlliesCount > 0) {
-         alert('모든 살아있는 아군의 행동을 선택해주세요.');
+         alert('모든 살아 있는 아군의 행동을 선택해 주세요.');
          return;
     }
+
+    if(skillSelectionArea) skillSelectionArea.style.display = 'none';
+    if(executeTurnButton) executeTurnButton.style.display = 'none';
+    if(skillDescriptionArea) skillDescriptionArea.innerHTML = ''; // 턴 실행 시 설명 영역 초기화
 
     console.log(`[DEBUG] executeBattleTurn: Starting turn ${currentTurn}. Player actions in queue: ${playerActionsQueue.length}`);
     skillSelectionArea.style.display = 'none';
