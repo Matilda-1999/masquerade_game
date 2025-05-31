@@ -2,10 +2,6 @@
 const MAP_WIDTH = 5;
 const MAP_HEIGHT = 5;
 
-// --- 0. 상수 정의 ---
-const MAP_WIDTH = 5;
-const MAP_HEIGHT = 5;
-
 const SKILLS = { // 이전 답변에서 이미 로그 스타일 수정된 내용 반영된 것으로 가정
     // [근성]
     SKILL_RESILIENCE: {
