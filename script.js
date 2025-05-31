@@ -1128,6 +1128,54 @@ async function executeSingleAction(action) {
     return false;
 }
 
+async function executeBattleTurn() {
+    // '턴 실행' 버튼 클릭 시 호출
+    if (!isBattleStarted) { alert('전투를 시작해 주세요. (executeBattleTurn)'); return; }
+    const aliveAlliesCount = allyCharacters.filter(c => c.isAlive).length;
+    if (playerActionsQueue.length < aliveAlliesCount && aliveAlliesCount > 0) {
+         alert('모든 살아있는 아군의 행동을 선택해주세요.');
+         return;
+    }
+
+    console.log(`[DEBUG] executeBattleTurn: Starting turn ${currentTurn}. Player actions in queue: ${playerActionsQueue.length}`);
+    skillSelectionArea.style.display = 'none';
+    executeTurnButton.style.display = 'none';
+
+    logToBattleLog(`\n--- ${currentTurn} 턴 아군 행동 실행 ---`);
+    for (const action of playerActionsQueue) {
+        console.log(`[DEBUG] executeBattleTurn: Ally action for ${action.caster.name}, type: ${action.type}`);
+        if (await executeSingleAction(action)) {
+            console.log(`[DEBUG] executeBattleTurn: Battle ended during ally turn.`);
+            return; 
+        }
+        console.log(`[DEBUG] executeBattleTurn: Action processed for ${action.caster.name}. Continuing to next action if any.`);
+    }
+    console.log(`[DEBUG] executeBattleTurn: All ally actions completed for turn ${currentTurn}.`);
+
+    logToBattleLog(`\n--- ${currentTurn} 턴 적군 행동 실행 ---`);
+    for (const enemyChar of enemyCharacters) {
+        if (enemyChar.isAlive) {
+            console.log(`[DEBUG] executeBattleTurn: Enemy action for ${enemyChar.name}`);
+            if (await performEnemyAction(enemyChar)) {
+                console.log(`[DEBUG] executeBattleTurn: Battle ended during enemy turn.`);
+                return; 
+            }
+        }
+    }
+    console.log(`[DEBUG] executeBattleTurn: All enemy actions completed for turn ${currentTurn}.`);
+
+    console.log(`[DEBUG] executeBattleTurn: End of turn ${currentTurn}. About to check conditions for new turn preparation.`);
+    if (!checkBattleEnd() && isBattleStarted) { 
+        console.log(`[DEBUG] executeBattleTurn: Preparing new turn cycle.`);
+        prepareNewTurnCycle(); 
+    } else {
+        console.log(`[DEBUG] executeBattleTurn: Battle ended or not started after turn ${currentTurn}. Not preparing new turn. isBattleStarted: ${isBattleStarted}`);
+        if (!isBattleStarted && startButton) startButton.style.display = 'block'; 
+        if (executeTurnButton) executeTurnButton.style.display = 'none';
+        if (nextTurnButton) nextTurnButton.style.display = 'none';
+    }
+}
+
 async function performEnemyAction(enemyChar) {
     applyTurnStartEffects(enemyChar);
     logToBattleLog(`\n--- ${enemyChar.name}의 행동 (${currentTurn} 턴) ---`);
