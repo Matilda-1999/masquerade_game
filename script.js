@@ -544,14 +544,14 @@ class Character {
         if (this.currentHp <= 0) {
             this.currentHp = 0;
             if (this.isAlive) {
-                // ⭐ 디버깅 로그 추가 1 (사망 메시지 전)
+                // 디버깅 로그 추가 1
                 console.log("[DEBUG takeDamage] Before death log - typeof logFn:", typeof logFn, "Actual value of logFn:", logFn);
                 logFn(`💀 ${this.name}이(가) 쓰러졌습니다!`);
             }
             this.isAlive = false;
         }
 
-        // ⭐ 디버깅 로그 추가 2 (오류 발생 추정 라인 바로 전)
+        // 디버깅 로그 추가 2
         console.log("[DEBUG takeDamage] Before final HP log - typeof logFn:", typeof logFn, "Actual value of logFn:", logFn);
         logFn(`[${this.name}의 HP]: ${initialHp.toFixed(0)} -> ${this.currentHp.toFixed(0)} (보호막: ${this.shield.toFixed(0)})`); // 이 라인이 541번째 줄 오류 발생 지점으로 강하게 의심됨
 
@@ -828,7 +828,7 @@ function prepareNewTurnCycle() {
 function prepareNextTurn() { // 이 함수는 이제 '다음 아군 행동 선택 UI 표시' 또는 '턴 실행 버튼 표시' 역할
     if (!isBattleStarted) { alert('전투를 시작해 주세요. (prepareNextTurn)'); return; }
 
-    // 이 함수는 '다음 턴 (스킬/이동 선택)' 버튼 클릭 시 또는 confirmAction 후 호출됨.
+    // 이 함수는 '다음 턴 (스킬/이동 선택)' 버튼 클릭 시 또는 confirmAction 후 호출됨
     // 즉, 다음 아군의 행동을 선택하게 하거나, 모든 아군 선택이 끝났으면 '턴 실행' 버튼을 보여줌.
     // currentTurn 증가나 playerActionsQueue 초기화는 여기서 하지 않음. (prepareNewTurnCycle에서 담당)
 
@@ -1025,7 +1025,7 @@ function confirmAction() {
         logToBattleLog(`✅ ${caster.name}의 스킬: [${skill.name}] 대기열 추가.`);
     } else if (selectedAction.type === 'move') {
         actionDetails.moveDelta = selectedAction.moveDelta;
-         // 이동 시 경계 및 점유 재확인 (selectMove에서 이미 하지만, 방어적으로)
+         // 이동 시 경계 및 점유 재확인
         const targetX = caster.posX + selectedAction.moveDelta.dx;
         const targetY = caster.posY + selectedAction.moveDelta.dy;
         if (targetX < 0 || targetX >= MAP_WIDTH || targetY < 0 || targetY >= MAP_HEIGHT) {
@@ -1047,7 +1047,7 @@ function confirmAction() {
 
     playerActionsQueue.push(actionDetails);
     currentActingCharacterIndex++;
-    // showSkillSelectionForNextAlly(); // 이 호출은 prepareNextTurn으로 대체됨.
+    // showSkillSelectionForNextAlly(); // 이 호출은 prepareNextTurn으로 대체
     prepareNextTurn(); // 다음 아군 행동 선택 또는 턴 실행 버튼 표시
 }
 
@@ -1073,61 +1073,36 @@ async function executeSingleAction(action) {
             let actualAllies = allyCharacters.filter(a => a.isAlive);
             let actualEnemies = enemyCharacters.filter(e => e.isAlive);
 
-            // executeSingleAction 함수 내부의 스킬 실행 부분 (새로운 코드로 교체!)
-            console.log(`[DEBUG] executeSingleAction: Attempting to execute skill: ${skill.name} by ${caster.name}, targetType: ${skill.targetType}`);
+            // executeSingleAction 함수 내부의 스킬 실행 부분
+console.log(`[DEBUG] executeSingleAction: Attempting to execute skill: ${skill.name} by ${caster.name}, targetType: ${skill.targetType}`);
 
-            // 각 스킬이 어떤 정보를 필요로 하는지에 따라 다르게 호출해줄 거예요.
             switch (skill.targetType) {
-                case 'self': // 스킬 시전자가 자기 자신에게 쓰는 스킬들
-                    // 'self' 중에서도 특별한 스킬들이 있어요.
-                    if (skill.id === SKILLS.SKILL_PROVOKE.id) {
-                        // '도발' 스킬은 자기 자신에게 쓰지만, 적군(enemies)과 아군(allies) 목록 정보가 필요해요.
-                        // SKILL_PROVOKE.execute는 (caster, allies, enemies, battleLog) 순서로 정보를 받기로 약속했어요.
+                case 'self':
+                    if (skill.id === SKILLS.SKILL_PROVOKE.id || skill.id === SKILLS.SKILL_REALITY.id) {
                         skillSuccess = skill.execute(caster, actualAllies, actualEnemies, logToBattleLog);
-                    } else if (skill.id === SKILLS.SKILL_REALITY.id) {
-                        // '실존' 스킬도 자기 자신에게 쓰지만, 모든 아군(allies)에게 버프를 주므로 allies 정보가 필요해요.
-                        // SKILL_REALITY.execute는 (caster, allies, enemies, battleLog) 순서로 정보를 받아요.
-                        skillSuccess = skill.execute(caster, actualAllies, actualEnemies, logToBattleLog);
-                    } else if (skill.id === SKILLS.SKILL_RESILIENCE.id || skill.id === SKILLS.SKILL_REVERSAL.id) {
-                        // '근성', '역습' 스킬은 자기 자신에게만 효과가 있고, 다른 아군/적군 목록은 직접 사용하지 않아요.
-                        // 하지만 execute 함수 정의가 (caster, allies, enemies, battleLog) 형태로 되어 있을 수 있으니,
-                        // 일단은 다 넘겨주되, 해당 스킬 함수 안에서는 caster 정보만 주로 쓸 거예요.
-                        // mainTarget을 caster로 해서 전달하는 것이 더 명확할 수 있지만, 여기서는 일반적인 self 처리로 둡니다.
-                        // 만약 이 스킬들이 (caster, battleLog) 처럼 더 적은 정보만 받는다면, 그에 맞게 바꿔야 해요.
-                        // 지금은 (caster, mainTarget=caster, subTarget=null, actualAllies, actualEnemies, battleLog) 형태로 호출될 수 있는
-                        // 맨 아래 default 부분으로 빠지지 않도록, 그리고 PROVOKE처럼 allies/enemies를 직접 쓰지 않으므로
-                        // 명시적으로 (caster, caster (mainTarget), null (subTarget), actualAllies, actualEnemies, battleLog) 형태로 호출해 줄 수 있어요.
-                        // 여기서는 더 간단히, PROVOKE 등과 같은 시그니처로 호출된 후 내부에서 사용하지 않는다고 가정하거나,
-                        // 또는 mainTarget을 caster로 설정한 기본 case로 보낼 수 있습니다.
-                        // 가장 안전한 것은 각 스킬의 execute 파라미터 정의를 보고 정확히 맞춰주는 것입니다.
-                        // 여기서는 일단 다른 self 스킬처럼 caster를 mainTarget으로 하여 아래 default로 보내는 대신,
-                        // SKILL_PROVOKE처럼 호출해보고, 해당 스킬들(RESILIENCE, REVERSAL)의 execute 함수가
-                        // 두번째(allies), 세번째(enemies) 파라미터를 사용하지 않는다면 괜찮습니다.
-                        // 만약 해당 스킬들이 (caster, target, allies, enemies, battleLog) 시그니처를 따른다면,
-                        // target은 caster 자신이 됩니다.
-                        skillSuccess = skill.execute(caster, caster, null, actualAllies, actualEnemies, logToBattleLog);
-                    }
-                    else {
-                        // 그 외 일반적인 'self' 대상 스킬들.
-                        // 보통 이런 스킬들은 (caster, 자기자신(target), null, 전체아군, 전체적군, battleLog) 형태로 정보를 받아요.
-                        skillSuccess = skill.execute(caster, caster, null, actualAllies, actualEnemies, logToBattleLog);
+                    } else { // SKILL_RESILIENCE, SKILL_REVERSAL 등
+                        // 이 스킬들의 execute 시그니처가 (caster, target, allies, enemies, battleLog) 이고 target이 caster 자신이라면
+                        skillSuccess = skill.execute(caster, caster, actualAllies, actualEnemies, logToBattleLog);
                     }
                     break;
-                case 'all_enemies': // 모든 적군 대상 스킬
-                    // '진리' 스킬(SKILL_TRUTH)은 (caster, enemies, battleLog) 순서로 정보를 받아요.
+                case 'all_enemies': 
                     skillSuccess = skill.execute(caster, actualEnemies, logToBattleLog);
                     break;
-                case 'all_allies': // 모든 아군 대상 스킬
-                    // '반격' 스킬(SKILL_COUNTER)이나 '실존'(SKILL_REALITY)은 (caster, allies, enemies, battleLog) 순서로 정보를 받아요.
-                    // (실존은 위에서 self로도 처리될 수 있지만, targetType이 all_allies이면 이쪽으로)
+                case 'all_allies': 
                     skillSuccess = skill.execute(caster, actualAllies, actualEnemies, logToBattleLog);
                     break;
-                case 'single_enemy': // 단일 적군 대상
-                case 'single_ally':  // 단일 아군 대상
-                case 'single_ally_or_self': // 자신 또는 단일 아군 대상
-                case 'multi_enemy': // 여러 적군 대상 (주 타겟, 부 타겟)
-                default: // 위에 특별히 지정되지 않은 나머지 스킬들
-                    // 이런 스킬들은 보통 (caster, 주타겟, 부타겟, 전체아군, 전체적군, battleLog) 형태로 정보를 받아요.
+                case 'single_ally_or_self': // ⭐ '허상' 스킬 (SKILL_ILLUSION)
+                case 'single_enemy':        // ⭐ '서막', '절정', '간파' 스킬
+                case 'single_ally':         // ⭐ '허무' 스킬
+                    // 이 스킬들은 execute(caster, target, allies, enemies, battleLog) 시그니처를 따릅니다.
+                    // mainTarget이 target으로, actualAllies가 allies로, actualEnemies가 enemies로, logToBattleLog가 battleLog로 매칭됩니다.
+                    skillSuccess = skill.execute(caster, mainTarget, actualAllies, actualEnemies, logToBattleLog);
+                    break;
+                case 'multi_enemy': // 예: SKILL_RUPTURE는 (caster, mainTarget, subTarget, allies, enemies, battleLog)
+                    skillSuccess = skill.execute(caster, mainTarget, subTarget, actualAllies, actualEnemies, logToBattleLog);
+                    break;
+                default:
+                    console.warn(`[WARN] Unknown/Unhandled skill targetType: ${skill.targetType} for skill ${skill.name}. Using default call signature.`);
                     skillSuccess = skill.execute(caster, mainTarget, subTarget, actualAllies, actualEnemies, logToBattleLog);
                     break;
             }
