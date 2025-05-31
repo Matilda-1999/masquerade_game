@@ -166,8 +166,9 @@
             justify-content: center;
         }
         .button .material-icons, .button .material-icons-outlined {
+            font-size: 1.25em; /* 버튼 내 아이콘 크기 */
             margin-right: 8px;
-            font-size: 1.2em;
+            vertical-align: middle; /* 버튼에서는 middle 정렬이 일반적 */
         }
 
         .button:hover {
@@ -239,6 +240,7 @@
         .map-display-area { /* 맵 영역 컨테이너 */
             width: 100%; /* 부모 너비에 맞춤 */
             margin-bottom: 25px; /* 아래 캐릭터 카드와의 간격 */
+            text-align: center; /* 내부 요소를 중앙 정렬하기 위함 */
         }
         .map-grid-container {
             margin-top: 15px; /* 맵 제목과의 간격 */
@@ -252,8 +254,8 @@
             display: flex;
         }
         .map-cell {
-            width: 65px;  /* ⭐ 맵 셀 너비 증가 (3글자 보이도록) ⭐ */
-            height: 65px; /* ⭐ 맵 셀 높이 증가 ⭐ */
+            width: 65px;  /* 맵 셀 너비 증가 */
+            height: 65px; /* 맵 셀 높이 증가 */
             border: 1px solid #383838;
             display: flex;
             justify-content: center;
@@ -305,6 +307,22 @@
         .movement-controls button:disabled { background: #383838 !important; color: #666 !important; }
         #confirmActionButton { font-family: var(--font-body); background: linear-gradient(145deg, var(--color-accent-green), #1e7e34); color: white; padding: 12px 20px; font-size: 1em; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); transition: background 0.3s ease, transform 0.2s ease; border:none; }
         #confirmActionButton:hover { background: linear-gradient(145deg, #218838, #1c6c2e); transform: translateY(-2px); }
+        
+        .material-icons, .material-icons-outlined {
+            vertical-align: text-bottom; /* 아이콘을 텍스트 기준선보다 약간 아래로 내려 자연스럽게 정렬 */
+            font-size: 1.1em;         /* 주변 텍스트보다 약간 크게 설정 (조정 가능) */
+            margin-right: 5px;        /* 아이콘과 텍스트 사이 간격 */
+            line-height: 1;           /* 아이콘 자체의 줄 간격을 타이트하게 */
+        }
+
+        /* 제목 h1, h2, h3, h4 안의 아이콘은 크기를 좀 더 크게 할 수 있습니다. */
+        h1 .material-icons, h1 .material-icons-outlined,
+        h2 .material-icons, h2 .material-icons-outlined,
+        h3 .material-icons, h3 .material-icons-outlined,
+        h4 .material-icons, h4 .material-icons-outlined {
+            font-size: 1.2em; /* 제목 내 아이콘 크기 */
+            vertical-align: middle;
+        }
         
         @media (max-width: 768px) {
             body { padding: 10px; }
