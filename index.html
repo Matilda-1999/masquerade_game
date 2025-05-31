@@ -8,55 +8,78 @@
         /* CSS: 웹 페이지 꾸미는 부분 */
         body {
             font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #f5f5f5;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
-            background-color: #f4f4f4;
+            padding: 40px;
         }
         .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background-color: #1f1b16;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
             width: 90%;
             max-width: 1000px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            border: 2px solid #d4af37;
         }
+        
+        h1, h2, h3 {
+            color: #d4af37;
+            text-shadow: 1px 1px 2px #000;
+        }
+        
         .flex-container { /* 아군/적군, 맵 영역을 가로로 배치하기 위함 */
             display: flex;
             justify-content: space-between;
             gap: 20px;
         }
+        
         .character-management-area, .map-display-area {
             flex-basis: 48%; /* 공간 분배 */
         }
-        h1, h2, h3 {
-            color: #333;
-        }
+        
         .character-input, .character-display {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-            background-color: #fafafa;
+            background-color: #2b2520;
+            border: 1px solid #e0a96d;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
         }
         .character-input label, .character-input select, .character-input input {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            font-size: 15px;
+            color: #f0e6d2;
         }
+        
+                .character-input select,
+        .character-input input {
+            background-color: #3b352e;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 8px;
+            color: #fdf6e3;
+        }
+        
         .character-input button {
             background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
+            background: linear-gradient(to right, #d4af37, #e0a96d);
+            color: #121212;
+            padding: 10px 20px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
-            margin-top: 5px;
+            font-weight: bold;
+            margin-top: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
         }
         .character-input button:hover {
-            background-color: #45a049;
+            transform: scale(1.05);
         }
         .character-stats {
             border: 1px solid #cceeff;
