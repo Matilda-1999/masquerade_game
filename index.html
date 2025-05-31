@@ -179,11 +179,26 @@
             border-radius: 5px;
         }
         .movement-controls h4 { margin-top: 0; }
-    </style>
+    /* 화면 폭이 768px 이하일 때 적용될 스타일 */
+    @media (max-width: 768px) {
+        .flex-container {
+            flex-direction: column; /* 아이템들을 세로로 쌓음 */
+            align-items: center;    /* 아이템들을 가운데 정렬 (선택 사항) */
+        }
+        .character-management-area, .map-display-area {
+            flex-basis: 100%; /* 각 영역이 부모 너비를 100% 사용하도록 함 */
+            width: 100%;      /* 너비를 100%로 설정하여 세로로 꽉 차게 표시 */
+            margin-bottom: 20px; /* 각 영역 사이에 약간의 간격 추가 (선택 사항) */
+        }
+        .map-display-area {
+            margin-bottom: 0; /* 마지막 아이템의 하단 마진은 제거 (선택 사항) */
+        }
+    }
+        </style>
 </head>
 <body>
     <div class="container">
-        <h1>마스레이드 전투 시뮬레이터</h1>
+        <h1>마스레이드 전투 시뮬레이션</h1>
 
         <div class="character-input">
             <h2>캐릭터 추가</h2>
