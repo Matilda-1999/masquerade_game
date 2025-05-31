@@ -89,11 +89,12 @@
                 border-radius: 8px;
                 box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
             position: relative; /* 삭제 버튼 위치 지정을 위함 */
+            margin-bottom: 15px;
         }
         .character-stats.selected {
             /* 아군/적군 선택 시 테두리 색상 변경 */
-            border: 2px solid #d4af37; /* 황금색 계열로 변경 */
-            background-color: #2b2520; /* 전체 배경색과 어울리게 변경 */
+            border: 2px solid #d4af37;
+            background-color: #2b2520;
         }
         .character-stats p {
             margin: 5px 0;
@@ -146,26 +147,26 @@
 
 
         .battle-area {
-            background-color: #2b2520; /* 어두운 색상으로 변경 */
+            background-color: #2b2520;
             padding: 20px;
             border-radius: 8px;
             margin-top: 20px;
-            border: 2px solid #d4af37; /* 황금색 계열로 변경 */
+            border: 2px solid #d4af37;
         }
         .battle-log-container { /* 전투 로그 섹션 컨테이너 */
             margin-top: 20px;
         }
         .battle-log {
-            background-color: #3b352e; /* 어두운 색상으로 변경 */
-            color: #f0e6d2; /* 글자색 변경 */
+            background-color: #3b352e; 
+            color: #f0e6d2;
             padding: 15px;
-            height: 250px; /* 높이 약간 늘림 */
+            height: 250px;
             overflow-y: scroll;
             border-radius: 5px;
             margin-top: 15px;
             font-family: 'Courier New', Courier, monospace;
             white-space: pre-wrap;
-            border: 1px solid #e0a96d; /* 황금색 계열로 변경 */
+            border: 1px solid #e0a96d;
         }
         .battle-controls button, .movement-controls button {
             margin: 5px;
@@ -212,6 +213,20 @@
         }
         
 
+        /* confirmActionButton 전용 스타일 */
+    #confirmActionButton {
+        background: linear-gradient(to right, #28a745, #218838); /* 초록색 계열 그라데이션 */
+        color: white; /* 글자색을 흰색으로 유지 */
+        border: none; /* 기존 테두리 제거 */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* 그림자 추가로 입체감 강조 */
+        transition: background 0.3s ease, transform 0.2s ease; /* 호버 애니메이션 추가 */
+    }
+    
+    #confirmActionButton:hover {
+        background: linear-gradient(to right, #218838, #28a745); /* 호버 시 색상 반전 또는 더 진하게 */
+        transform: translateY(-2px); /* 호버 시 살짝 떠오르는 효과 */
+    }
+        
     /* 화면 폭이 768px 이하일 때 적용될 스타일 */
     @media (max-width: 768px) {
         .flex-container {
