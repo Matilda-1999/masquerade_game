@@ -56,9 +56,12 @@
             font-family: var(--font-title);
             color: var(--color-primary-gold);
             text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+            display: flex; /* 아이콘과 텍스트 정렬을 위해 추가 */
+            align-items: center; /* 아이콘과 텍스트 수직 중앙 정렬 */
         }
         h1 {
-            text-align: center;
+            justify-content: center; /* h1의 경우 아이콘과 텍스트를 전체 중앙으로 */
+            text-align: center; /* 텍스트 자체도 중앙 정렬 */
             margin-bottom: 35px;
             font-size: 2.5em;
             letter-spacing: 1px;
@@ -84,33 +87,32 @@
             margin-bottom: 10px;
         }
         
-        /* ⭐ 캐릭터 카드 2단 구성을 위한 래퍼 스타일 ⭐ */
         .character-cards-wrapper {
             display: flex;
             justify-content: space-between;
-            gap: 25px; /* 아군 카드 영역과 적군 카드 영역 사이 간격 */
-            margin-top: 25px; /* 맵 아래, 이 영역 위 간격 */
+            gap: 25px; 
+            margin-top: 25px; 
         }
         .ally-card-area, .enemy-card-area {
-            flex-basis: 48%; /* 각 카드 영역이 절반씩 차지 */
-            background-color: var(--color-surface-alt); /* 배경색은 character-display와 유사하게 */
+            flex-basis: 48%; 
+            background-color: var(--color-surface-alt); 
             border: 1px solid var(--color-border-accent);
             padding: 15px;
             border-radius: 8px;
         }
-        .ally-card-area h2, .enemy-card-area h2 { /* 카드 영역 내부의 h2 마진 조정 */
+        .ally-card-area h2, .enemy-card-area h2 { 
             margin-top: 0; 
             padding-bottom: 8px;
-            font-size: 1.5em; /* 카드 영역 제목 크기 조정 */
+            font-size: 1.5em; 
         }
         
-        .character-input, .character-display { /* .character-display는 카드 리스트를 감싸는 div */
-            background-color: transparent; /* 내부 character-display는 배경 없음 (부모가 배경 가짐) */
-            border: none; /* 내부 character-display는 테두리 없음 */
-            padding: 0; /* 내부 character-display는 패딩 없음 */
-            margin-bottom: 0; /* 내부 character-display는 마진 없음 */
+        .character-input, .character-display { 
+            background-color: transparent; 
+            border: none; 
+            padding: 0; 
+            margin-bottom: 0; 
         }
-        .character-input { /* 캐릭터 추가 영역은 기존 스타일 유지 가능 */
+        .character-input { 
             background-color: var(--color-surface-alt);
             border: 1px solid var(--color-border-accent);
             padding: 20px;
@@ -165,12 +167,7 @@
             align-items: center;
             justify-content: center;
         }
-        .button .material-icons, .button .material-icons-outlined {
-            font-size: 1.25em; /* 버튼 내 아이콘 크기 */
-            margin-right: 8px;
-            vertical-align: middle; /* 버튼에서는 middle 정렬이 일반적 */
-        }
-
+        
         .button:hover {
             background: linear-gradient(145deg, var(--color-primary-gold), var(--color-primary-gold-lighter));
             transform: translateY(-2px);
@@ -184,7 +181,7 @@
             box-shadow: none !important;
         }
 
-        .character-input button {
+        .character-input button.button { /* .character-input 내의 button에 .button 클래스 적용 시 사용 */
             margin-top: 15px;
         }
 
@@ -222,11 +219,10 @@
             border-radius: 50%;
             width: 24px;
             height: 24px;
-            font-size: 14px;
+            font-size: 14px; /* X 글자 크기 */
+            line-height: 24px; /* 수직 중앙 정렬 */
+            text-align: center; /* 수평 중앙 정렬 */
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             opacity: 0.7;
             transition: all 0.2s;
         }
@@ -236,26 +232,25 @@
             transform: scale(1.1);
         }
 
-        /* 맵 스타일 */
-        .map-display-area { /* 맵 영역 컨테이너 */
-            width: 100%; /* 부모 너비에 맞춤 */
-            margin-bottom: 25px; /* 아래 캐릭터 카드와의 간격 */
-            text-align: center; /* 내부 요소를 중앙 정렬하기 위함 */
+        .map-display-area {
+            width: 100%;
+            margin-bottom: 25px;
+            text-align: center;
         }
         .map-grid-container {
-            margin-top: 15px; /* 맵 제목과의 간격 */
+            margin-top: 15px;
             border: 1px solid var(--color-border);
             background-color: #1a1a1a;
             padding: 8px;
             border-radius: 6px;
-            display: inline-block; /* 맵 크기에 맞게 줄어들도록 */
+            display: inline-block;
         }
         .map-row {
             display: flex;
         }
         .map-cell {
-            width: 65px;  /* 맵 셀 너비 증가 */
-            height: 65px; /* 맵 셀 높이 증가 */
+            width: 65px;
+            height: 65px;
             border: 1px solid #383838;
             display: flex;
             justify-content: center;
@@ -269,16 +264,16 @@
             background-color: #333;
         }
         .map-cell .char-marker {
-            font-size: 0.85em; /* ⭐ 마커 내 글자 크기 (셀 크기에 맞게 조절) ⭐ */
+            font-size: 0.85em;
             font-weight: bold;
-            padding: 5px;    /* ⭐ 마커 내부 패딩 증가 ⭐ */
+            padding: 5px;
             border-radius: 5px;
-            min-width: 50px; /* ⭐ 마커 최소 너비 증가 (3글자+여백) ⭐ */
+            min-width: 50px;
             text-align: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.6);
-            overflow: hidden; /* 이름 길 경우 숨김 */
-            text-overflow: ellipsis; /* 이름 길 경우 ... 표시 (한 줄일 때만 동작) */
-            white-space: nowrap; /* 이름이 길어도 한 줄로 */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .map-cell .char-marker.ally { background-color: var(--color-accent-blue); color: white; }
         .map-cell .char-marker.enemy { background-color: var(--color-accent-red); color: white; }
@@ -287,19 +282,78 @@
             background-color: var(--color-surface);
             padding: 25px;
             border-radius: 10px;
-            margin-top: 0; /* 캐릭터 카드 바로 아래 붙도록 조정 */
+            margin-top: 0; 
             border: 1px solid var(--color-primary-gold-darker);
         }
-        /* ... (나머지 CSS는 이전과 유사하게 유지) ... */
         .battle-log-container { margin-top: 30px; }
         .battle-log { background-color: #171717; color: var(--color-text-secondary); padding: 20px; height: 300px; overflow-y: auto; border-radius: 8px; margin-top: 20px; font-family: 'Courier New', Courier, monospace; white-space: pre-wrap; border: 1px solid var(--color-border); line-height: 1.6; font-size: 0.9em; }
-        .battle-controls button, .movement-controls button { font-family: var(--font-body); margin: 8px 5px; }
-        .skill-selection { margin-top: 25px; border: 1px solid var(--color-border-accent); padding: 20px; border-radius: 8px; background-color: var(--color-surface-alt); }
-        .skill-buttons button { font-family: var(--font-body); background-color: var(--color-primary-gold-darker); color: var(--color-text-primary); padding: 10px 14px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: background-color 0.2s, transform 0.1s; }
-        .skill-buttons button:hover { background-color: var(--color-primary-gold); transform: scale(1.03); }
-        .skill-buttons button:disabled { background: #454545 !important; color: #777 !important; }
-        .skill-description-display { margin-top: 20px; margin-bottom: 20px; padding: 15px; background-color: #222526; border: 1px solid var(--color-border); border-radius: 6px; font-size: 0.95em; min-height: 50px; color: var(--color-text-secondary); line-height: 1.5; }
-        .skill-description-display strong { color: var(--color-primary-gold-lighter); }
+        
+        .battle-controls button, /* .button 클래스를 이미 사용 중이므로 이 규칙은 단순화 가능 */
+        .movement-controls button { /* 이동 버튼은 아래 개별 스타일 우선 */
+            font-family: var(--font-body);
+            margin: 8px 5px; 
+        }
+        
+/* index.html의 <style> 태그 안의 스킬 버튼 관련 스타일 수정 */
+
+.skill-selection {
+    margin-top: 25px;
+    border: 1px solid var(--color-border-accent);
+    padding: 20px;
+    border-radius: 8px;
+    background-color: var(--color-surface-alt);
+}
+
+        .skill-buttons {
+            text-align: center; /* ⭐ 내부 스킬 버튼들을 가운데 정렬 ⭐ */
+            margin-bottom: 10px; /* 스킬 버튼과 설명창 사이 간격 (선택 사항) */
+        }
+        
+        .skill-buttons button {
+            font-family: var(--font-body);
+            background-color: var(--color-primary-gold-darker);
+            color: var(--color-text-primary); 
+            padding: 10px 14px; 
+            margin: 5px; /* 버튼 간 기본 간격 */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s, transform 0.1s;
+            display: inline-block; /* text-align: center의 영향을 받도록 */
+            min-width: 90px;       /* ⭐ 버튼 최소 너비 설정 (내용물에 따라 조절) ⭐ */
+            /* 불필요한 세미콜론 제거됨 */
+        }
+        
+        .skill-buttons button:hover {
+            background-color: var(--color-primary-gold);
+            transform: scale(1.03);
+        }
+        
+        .skill-buttons button:disabled {
+            background: #454545 !important;
+            color: #777 !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+                
+        .skill-description-display {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #222526;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            font-size: 0.95em;
+            min-height: 50px;
+            color: var(--color-text-secondary);
+            line-height: 1.5;
+        }
+        
+        .skill-description-display strong {
+            color: var(--color-primary-gold-lighter);
+        }
 
         .movement-controls {
             margin-top: 20px; 
@@ -307,79 +361,120 @@
             background-color: var(--color-surface-alt); 
             border-radius: 6px; 
             border: 1px solid var(--color-border-accent);
-            text-align: center; /* 내부 버튼들을 가운데 정렬하기 위함 (선택 사항) */
+            text-align: center; 
         }
         .movement-controls h4 { 
             font-family: var(--font-title); 
             margin-top: 0; 
-            margin-bottom: 15px; /* 제목과 버튼 사이 간격 약간 늘림 */
+            margin-bottom: 15px; 
             color: var(--color-primary-gold); 
         }
         .movement-controls button { 
             font-family: var(--font-body); 
-            background-color: #383838;    /* ⭐ 버튼 배경색 약간 어둡게 조정 (기존 disabled 색상 활용) */
+            background-color: #3a3a3a;    
             color: var(--color-text-primary); 
-            border: 1px solid #2c2c2c;    /* ⭐ 테두리 색상 (배경보다 어둡게) */
-            border-radius: 5px;           
-            
-            /* ⭐ 버튼 크기 및 내부 아이콘(텍스트) 크기 조정 ⭐ */
-            font-size: 1.5em;             /* 화살표 아이콘(텍스트) 크기 증가 */
-            padding: 10px 12px;           /* 내부 여백 (상하 10px, 좌우 12px) - 크기에 맞춰 조정 */
-            min-width: 50px;              /* 버튼 최소 너비 */
-            min-height: 50px;             /* 버튼 최소 높이 */
-            line-height: 1;               /* 텍스트 수직 정렬 도움 */
-            
-            margin: 5px;                  /* 버튼 간 간격 */
+            border: 1px solid #2c2c2c;    
+            border-radius: 4px;           
+            font-size: 1.2em;     /* 아이콘 크기 조정 */
+            padding: 10px;        /* 패딩 조정으로 버튼 크기 키움 */
+            min-width: 45px;      /* 버튼 최소 너비 */
+            min-height: 45px;     /* 버튼 최소 높이 */
+            line-height: 1;       
+            margin: 4px;                  
             cursor: pointer;
             transition: background-color 0.2s, border-color 0.2s, color 0.2s;
-            box-shadow: none;             /* 그림자 제거 (입체감 없애기) */
+            box-shadow: none;             
             text-align: center;
         }
         .movement-controls button:hover { 
-            background-color: #4f4f4f;    /* 호버 시 배경색 */
+            background-color: #4f4f4f;    
             border-color: #404040;        
             color: var(--color-primary-gold-lighter); 
         }
         .movement-controls button:disabled { 
-            background-color: #282828 !important; /* 비활성화 시 배경색 (더 어둡게) */
-            color: #555 !important;               /* 비활성화 시 글자색 */
-            border-color: #202020 !important;      /* 비활성화 시 테두리 색상 */
+            background-color: #303030 !important; 
+            color: #555 !important;               
+            border-color: #252525 !important;      
             cursor: not-allowed !important;
             box-shadow: none !important;
         }
 
-        #confirmActionButton { font-family: var(--font-body); background: linear-gradient(145deg, var(--color-accent-green), #1e7e34); color: white; padding: 12px 20px; font-size: 1em; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); transition: background 0.3s ease, transform 0.2s ease; border:none; }
-        #confirmActionButton:hover { background: linear-gradient(145deg, #218838, #1c6c2e); transform: translateY(-2px); }
+           #confirmActionButton {
+                font-family: var(--font-body); /* 다른 버튼과 폰트 통일 */
+                background: linear-gradient(145deg, var(--color-accent-green), #218838); /* 기존 초록색 계열 그라데이션 */
+                color: white;
+                padding: 12px 22px; /* 패딩을 늘려 버튼 크기 키움 */
+                border: none;
+                border-radius: 6px; /* 다른 버튼과 둥글기 통일 */
+                font-size: 1em;    /* 다른 버튼과 폰트 크기 통일 */
+                font-weight: bold;
+                text-transform: uppercase; /* 대문자화 */
+                letter-spacing: 0.8px;   /* 자간 조정 */
+                cursor: pointer;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* 그림자 약간 강화 */
+                transition: all 0.2s ease-out; /* 모든 속성에 대한 부드러운 전환 */
+                display: inline-flex; /* 아이콘과 텍스트 정렬 위함 */
+                align-items: center;
+                justify-content: center;
+                /* 기존 스타일에서 필요한 부분 가져오기 */
+                margin-top: 15px; /* 예시: 위 요소와의 간격 (필요시 조정) */
+            }
+            
+            #confirmActionButton .material-icons, 
+            #confirmActionButton .material-icons-outlined { /* 아이콘 스타일 */
+                font-size: 1.25em; 
+                margin-right: 8px; 
+                vertical-align: middle;
+            }
+            
+            #confirmActionButton:hover {
+                background: linear-gradient(145deg, #218838, #1e7e34); /* 호버 시 약간 어두운 초록색 */
+                transform: translateY(-2px) scale(1.02); /* 살짝 위로 이동하며 약간 커지는 효과 */
+                box-shadow: 0 6px 12px rgba(40, 167, 69, 0.3); /* 호버 시 그림자 변경 */
+            }
+            
+            #confirmActionButton:disabled { /* 비활성화 스타일도 다른 버튼과 유사하게 */
+                background: #454545 !important;
+                color: #777 !important;
+                cursor: not-allowed !important;
+                transform: none !important;
+                box-shadow: none !important;
+            }
         
+        /* 아이콘 공통 스타일 */
         .material-icons, .material-icons-outlined {
-            vertical-align: text-bottom; /* 아이콘을 텍스트 기준선보다 약간 아래로 내려 자연스럽게 정렬 */
-            font-size: 1.1em;         /* 주변 텍스트보다 약간 크게 설정 (조정 가능) */
-            margin-right: 5px;        /* 아이콘과 텍스트 사이 간격 */
-            line-height: 1;           /* 아이콘 자체의 줄 간격을 타이트하게 */
+            vertical-align: middle; /* 기본 수직 정렬을 middle로 */
+            font-size: 1.1em;       /* 기본 아이콘 크기를 텍스트보다 약간 크게 */
+            margin-right: 6px;      /* 오른쪽 여백 */
+            line-height: 1;         /* 아이콘 자체의 줄 간격 타이트하게 */
         }
-
-        /* 제목 h1, h2, h3, h4 안의 아이콘은 크기를 좀 더 크게 할 수 있습니다. */
+        /* 제목 내 아이콘 스타일 */
         h1 .material-icons, h1 .material-icons-outlined,
         h2 .material-icons, h2 .material-icons-outlined,
         h3 .material-icons, h3 .material-icons-outlined,
         h4 .material-icons, h4 .material-icons-outlined {
-            font-size: 1.2em; /* 제목 내 아이콘 크기 */
-            vertical-align: middle;
+            font-size: 1em; /* 제목 폰트 크기에 상대적으로 맞춤 (1.2em은 너무 클 수 있음) */
+            margin-right: 10px; /* 제목에서는 아이콘과 텍스트 간격 더 넓게 */
+        }
+        /* 버튼(.button 클래스) 내 아이콘 스타일 재정의 (필요시) */
+        .button .material-icons, .button .material-icons-outlined {
+            font-size: 1.2em; /* 버튼 내 아이콘 크기를 버튼 텍스트에 맞게 조정 */
+            margin-right: 8px;
         }
         
         @media (max-width: 768px) {
             body { padding: 10px; }
             .container { padding: 15px; margin-bottom: 20px; }
-            .character-cards-wrapper { /* ⭐ 모바일에서 카드 영역 세로 정렬 ⭐ */
+            .character-cards-wrapper {
                 flex-direction: column;
                 align-items: stretch; 
             }
-            .ally-card-area, .enemy-card-area { /* ⭐ 모바일에서 카드 영역 너비 100% ⭐ */
+            .ally-card-area, .enemy-card-area {
                 flex-basis: auto;
                 width: 100%;
                 margin-bottom: 20px;
             }
-             .map-display-area { /* 맵 영역은 이미 부모 너비 100% 이므로 특별한 변경 없음 */
+             .map-display-area {
                 width: 100%;
                 margin-bottom: 20px;
             }
@@ -389,15 +484,31 @@
             .button, .battle-controls button, .movement-controls button, .skill-buttons button, #confirmActionButton { padding: 10px 12px; font-size: 0.9em; }
             .character-input input[type="text"], .character-input input[type="number"], .character-input select { padding: 10px; }
             .map-cell {
-                width: calc((100vw - 20px - 16px - 10px) / 5); /* (화면너비 - body패딩*2 - 맵컨테이너패딩*2 - row간격*4) / 칸수 */
+                width: calc((100vw - 20px - 16px - 10px) / 5); 
                 height: calc((100vw - 20px - 16px - 10px) / 5);
-                max-width: 55px; /* 모바일 최대 크기 */
+                max-width: 55px; 
                 max-height: 55px;
             }
             .map-cell .char-marker {
                 font-size: 0.8em;
                 min-width: 35px;
                 padding: 3px;
+            }
+            /* 모바일에서 아이콘 마진 줄이기 */
+            .material-icons, .material-icons-outlined {
+                margin-right: 4px;
+                font-size: 1em; /* 모바일에서는 텍스트와 비슷한 크기로 */
+            }
+             h1 .material-icons, h1 .material-icons-outlined,
+             h2 .material-icons, h2 .material-icons-outlined,
+             h3 .material-icons, h3 .material-icons-outlined,
+             h4 .material-icons, h4 .material-icons-outlined {
+                font-size: 1em; 
+                margin-right: 6px; 
+            }
+            .button .material-icons, .button .material-icons-outlined {
+                font-size: 1.1em;
+                margin-right: 6px;
             }
         }
 
@@ -408,14 +519,10 @@
     </style>
 </head>
 <body>
-    <div class="container"> <h1><span class="material-icons-outlined" style="vertical-align: bottom; font-size: 1.1em; margin-right: 8px;">✦</span>마스레이드 전투 시뮬레이션</h1>
-
-        <div class="character-input">
-            <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">person_add</span>캐릭터 추가</h2>
+    <div class="container"> <h1><span class="material-icons-outlined">casino</span>마스레이드 전투 시뮬레이션</h1> <div class="character-input">
+            <h2><span class="material-icons-outlined">person_add</span>캐릭터 추가</h2>
             <label for="charName">이름:</label>
-            <input type="text" id="charName" value="">
-
-            <label for="charType">영감:</label>
+            <input type="text" id="charName" value="용사"> <label for="charType">영감:</label>
             <select id="charType">
                 <option value="천체">천체</option>
                 <option value="암석">암석</option>
@@ -426,55 +533,54 @@
             <label for="charCurrentHp">현재 체력(최대 체력 100과 동일하게 하려면 비워 두세요):</label>
             <input type="number" id="charCurrentHp" placeholder="예: 80">
 
-            <button onclick="addCharacter('ally')" class="button"><span class="material-icons-outlined">group_add</span>아군 추가</button>
-            <button onclick="addCharacter('enemy')" class="button"><span class="material-icons-outlined">person_add_disabled</span>적군 추가</button>
+            <div class="char-add-buttons-wrapper"> <button onclick="addCharacter('ally')" class="button"><span class="material-icons-outlined">group_add</span>아군 추가</button>
+                <button onclick="addCharacter('enemy')" class="button"><span class="material-icons-outlined">person_add_disabled</span>적군 추가</button>
+            </div>
         </div>
         
         <div class="character-cards-wrapper">
             <div class="ally-card-area">
-                <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">groups</span>아군</h2>
+                <h2><span class="material-icons-outlined">groups</span>아군</h2>
                 <div id="allyCharacters" class="character-display">
                     <p>아군 캐릭터가 없습니다.</p>
                 </div>
             </div>
 
             <div class="enemy-card-area">
-                <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">skull</span>적군</h2>
-                <div id="enemyCharacters" class="character-display">
+                <h2><span class="material-icons-outlined">skull</span>적군</h2> <div id="enemyCharacters" class="character-display">
                     <p>적군 캐릭터가 없습니다.</p>
                 </div>
             </div>
         </div>
         
         <div class="map-display-area">
-            <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">map</span>맵 상황</h2>
+            <h2><span class="material-icons-outlined">map</span>맵 상황</h2>
             <div id="mapGridContainer" class="map-grid-container">
                 </div>
              <div id="mapInfo">
                 </div>
         </div>
-        
-    </div> <div class="container battle-area"> <h2><span class="material-symbols-outlined" style="vertical-align: bottom; margin-right: 8px;">swords</span>전투 진행 및 스킬 선택</h2>
-        <div class="battle-controls">
+
+    </div> <div class="container battle-area"> <h2><span class="material-icons-outlined">swords</span>전투 진행 및 스킬 선택</h2> <div class="battle-controls">
             <button onclick="startBattle()" id="startButton" class="button"><span class="material-icons">play_arrow</span>전투 시작</button>
             <button onclick="prepareNextTurn()" id="nextTurnButton" style="display: none;" class="button"><span class="material-icons">skip_next</span>다음 행동 선택</button> <button onclick="executeBattleTurn()" id="executeTurnButton" style="display: none;" class="button"><span class="material-icons">double_arrow</span>턴 실행</button>
         </div>
 
         <div id="skillSelectionArea" class="skill-selection" style="display: none;">
-            <h3><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">psychology</span>스킬/이동 선택: <span id="currentActingCharName"></span></h3>
+            <h3><span class="material-icons-outlined">psychology</span>스킬/이동 선택: <span id="currentActingCharName"></span></h3>
             <div id="availableSkills" class="skill-buttons">
                 </div>
             <div id="skillDescriptionArea" class="skill-description-display"> 
                 </div>
             <div class="movement-controls" id="movementControlsArea">
-                <h4><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">open_with</span>이동 (선택 시 턴 종료)</h4>
+                <h4><span class="material-icons-outlined">open_with</span>이동 (선택 시 턴 종료)</h4>
                 </div>
             <p>대상 선택: <span id="selectedTargetName">없음</span></p>
             <button onclick="confirmAction()" id="confirmActionButton" style="display: none;" class="button"><span class="material-icons">check_circle_outline</span>행동 확정</button>
         </div>
     </div>
 
-    <div class="container battle-log-container"> <h2><span class="material-icons-outlined" style="vertical-align: bottom; margin-right: 8px;">receipt_long</span>전투 로그</h2>
+    <div class="container battle-log-container"> <h2><span class="material-icons-outlined">receipt_long</span>전투 로그</h2>
         <div class="battle-log" id="battleLog">
             </div>
     </div>
