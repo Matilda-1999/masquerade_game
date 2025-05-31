@@ -347,9 +347,7 @@ function getElement(id) {
 let allyCharacters = [];
 let enemyCharacters = [];
 let currentTurn = 0;
-let isBattleStarted = false;
-// ***** CORRECTION HERE: Removed autoBattleMode *****
-// let autoBattleMode = false; 
+let isBattleStarted = false; 
 let currentActingCharacterIndex = 0;
 let playerActionsQueue = [];
 let characterPositions = {}; // 캐릭터 위치 추적: { "x,y": characterId }
@@ -376,8 +374,6 @@ const startButton = getElement('startButton');
 const nextTurnButton = getElement('nextTurnButton');
 const battleLogDiv = getElement('battleLog');
 const mapGridContainer = getElement('mapGridContainer'); // 맵 컨테이너
-// ***** CORRECTION HERE: Removed autoBattleButton variable *****
-// const autoBattleButton = getElement('autoBattleButton');
 
 
 // --- 2. 핵심 클래스 정의 ---
