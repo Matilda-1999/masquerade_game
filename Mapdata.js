@@ -19,7 +19,7 @@ function renderMapGrid(mapContainerElement, allyChars, enemyChars) {
     if (!mapContainerElement) return;
     mapContainerElement.innerHTML = ''; // 기존 맵 초기화
 
-    // 캐릭터 위치를 빠르게 찾기 위한 맵 (script.js의 characterPositions 대신 여기서 사용)
+    // 캐릭터 위치를 빠르게 찾기 위한 맵
     const gridCharMap = {}; // { "x,y": [{charNameInitial, team}, ...], ... }
     [...allyChars, ...enemyChars].forEach(char => {
         if (char.isAlive && char.posX !== -1 && char.posY !== -1) {
@@ -53,6 +53,7 @@ function renderMapGrid(mapContainerElement, allyChars, enemyChars) {
             // 예: cellDiv.onclick = () => handleMapCellClickCallback(x, y);
             rowDiv.appendChild(cellDiv);
         }
-        mapContainer.appendChild(rowDiv);
+        // ***** CORRECTION HERE *****
+        mapContainerElement.appendChild(rowDiv); // Was: mapContainer.appendChild(rowDiv);
     }
 }
