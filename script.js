@@ -517,7 +517,7 @@ class Character {
         // 현재는 근성 사용자가 직접 피해를 입을 때가 아닌, 스킬 자체 효과로 처리
 
         // [반격], [역습] 등의 '공격받은 후' 효과
-        if (attacker && attacker.isAlive) { // 공격자가 있어야하고 살아있어야함
+        if (attacker && attacker.isAlive) { // 공격자가 있어야 하고 살아 있어야함
             // [반격] 처리
             if (this.hasBuff('counter_active')) { // 이 버프는 SKILL_COUNTER execute에서 설정되어야 함
                 const counterDamage = actualDamageTakenThisHit * 1.2; // 받은 피해 기반
@@ -627,7 +627,7 @@ function addCharacter(team) {
 
     if (!name) { alert('캐릭터 이름을 입력해 주세요.'); nameInput.focus(); return; }
     if (currentHp !== null && (isNaN(currentHp) || currentHp <= 0)) {
-        alert('유효한 현재 체력을 입력하거나 비워두세요.'); hpInput.focus(); return;
+        alert('유효한 현재 체력을 입력하거나 비워 두세요.'); hpInput.focus(); return;
     }
 
     const newChar = new Character(name, type, currentHp);
@@ -676,8 +676,8 @@ function createCharacterCard(character, team) {
     card.innerHTML = `
         <p><strong>${character.name} (${character.type})</strong> ${character.posX !== -1 ? `[${character.posX},${character.posY}]` : ''}</p>
         <p>HP: ${character.currentHp.toFixed(0)} / ${character.maxHp.toFixed(0)} ${character.shield > 0 ? `(+${character.shield.toFixed(0)}🛡️)` : ''}</p>
-        <p>공격: ${character.getEffectiveStat('atk').toFixed(0)} | 마법공격: ${character.getEffectiveStat('matk').toFixed(0)}</p>
-        <p>방어: ${character.getEffectiveStat('def').toFixed(0)} | 마법방어: ${character.getEffectiveStat('mdef').toFixed(0)}</p>
+        <p>공격력: ${character.getEffectiveStat('atk').toFixed(0)} | 마법 공격력: ${character.getEffectiveStat('matk').toFixed(0)}</p>
+        <p>방어력: ${character.getEffectiveStat('def').toFixed(0)} | 마법 방어력: ${character.getEffectiveStat('mdef').toFixed(0)}</p>
         <p>상태: ${character.isAlive ? '생존' : '쓰러짐'}</p>
         ${character.buffs.length > 0 ? `<p>버프: ${character.buffs.map(b => `${b.name}(${b.turnsLeft}턴${b.stacks > 1 ? `x${b.stacks}` : ''})`).join(', ')}</p>` : ''}
         ${character.debuffs.length > 0 ? `<p>디버프: ${character.debuffs.map(d => `${d.name}(${d.turnsLeft}턴${d.stacks > 1 ? `x${d.stacks}`:''})`).join(', ')}</p>` : ''}
@@ -822,7 +822,7 @@ function startBattle() {
 }
 
 function prepareNextTurn() {
-    if (!isBattleStarted) { alert('전투를 시작해 주세요!'); return; }
+    if (!isBattleStarted) { alert('전투를 시작해 주세요.'); return; }
     if (autoBattleMode) { // 자동 전투 중이면 자동으로 행동 실행
         autoSelectAndExecuteTurn();
         return;
@@ -830,7 +830,7 @@ function prepareNextTurn() {
 
     if (playerActionsQueue.length > 0 && currentActingCharacterIndex < allyCharacters.filter(a=>a.isAlive).length) {
         // 아직 모든 아군의 행동 선택이 끝나지 않았는데 다음 턴으로 넘어가려 할 때
-         logToBattleLog("모든 아군의 행동을 선택하거나 '턴 실행'을 눌러주세요.");
+         logToBattleLog("모든 아군의 행동을 선택하거나 '턴 실행'을 눌러 주세요.");
     } else if(playerActionsQueue.length === 0 || currentActingCharacterIndex >= allyCharacters.filter(a=>a.isAlive).length) {
         // 모든 아군 행동 선택이 끝났거나, 아직 아무도 선택 안 한 새 턴
         currentTurn++;
@@ -1161,11 +1161,11 @@ function checkBattleEnd() {
     const allAlliesDead = allyCharacters.every(char => !char.isAlive);
 
     if (allEnemiesDead && enemyCharacters.length > 0) { // 적이 있었는데 다 죽음
-        logToBattleLog('--- 모든 적을 물리쳤습니다! 전투 승리! 🎉 ---');
+        logToBattleLog('--- 모든 적을 물리쳤습니다. 전투 승리! 🎉 ---');
         endBattle();
         return true;
     } else if (allAlliesDead && allyCharacters.length > 0) { // 아군이 있었는데 다 죽음
-        logToBattleLog('--- 모든 아군이 쓰러졌습니다! 전투 패배! 😭 ---');
+        logToBattleLog('--- 모든 아군이 쓰러졌습니다. 전투 패배! 😭 ---');
         endBattle();
         return true;
     }
