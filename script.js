@@ -2,7 +2,11 @@
 const MAP_WIDTH = 5;
 const MAP_HEIGHT = 5;
 
-const SKILLS = {
+// --- 0. 상수 정의 ---
+const MAP_WIDTH = 5;
+const MAP_HEIGHT = 5;
+
+const SKILLS = { // 이전 답변에서 이미 로그 스타일 수정된 내용 반영된 것으로 가정
     // [근성]
     SKILL_RESILIENCE: {
         id: "SKILL_RESILIENCE",
@@ -11,7 +15,7 @@ const SKILLS = {
         description: "자신에게 현재 체력의 2.5배 보호막 부여. 해당 턴에 발생한 모든 아군의 감소한 체력을 대신 감소.",
         targetType: "self",
         targetSelection: "self",
-        execute: (caster, allies, enemies, battleLog) => {
+        execute: (caster, allies, enemies, battleLog) => { // self 타입이지만, executeSingleAction에서 allies, enemies도 전달받을 수 있음
             const shieldAmount = caster.currentHp * 2.5;
             caster.shield += shieldAmount;
             battleLog(`✦보호막✦ ${caster.name}, [근성] 사용: 자신에게 ${shieldAmount.toFixed(0)} 보호막 획득. (현재 보호막: ${caster.shield.toFixed(0)})`);
@@ -28,20 +32,29 @@ const SKILLS = {
         targetType: "all_allies",
         targetSelection: "all_allies",
         execute: (caster, allies, enemies, battleLog) => {
+            const skillName = SKILLS.SKILL_COUNTER.name; // 스킬 이름 변수화
             if (caster.shield > 0) {
-                const liveAllies = allies.filter(a => a.isAlive);
-                if (liveAllies.length > 0) {
-                    const shieldPerAlly = caster.shield / liveAllies.length;
-                    liveAllies.forEach(ally => {
+                const liveAllies = allies.filter(a => a.isAlive && a.id !== caster.id); // 시전자를 제외한 살아있는 아군
+                const targetAlliesForLog = liveAllies.length > 0 ? liveAllies : (allies.filter(a => a.isAlive).length === 1 && allies[0].id === caster.id ? [] : allies.filter(a => a.isAlive)); // 로그용 대상 선정 (자신만 있을 경우 빈 배열)
+        
+        
+                if (targetAlliesForLog.length > 0) { // 시전자 포함 살아있는 아군이 1명 초과일 때 (즉, 다른 아군이 있을 때)
+                    const allLivingAlliesIncludingCaster = allies.filter(a => a.isAlive); // 보호막 분배 대상은 시전자 포함
+                    const shieldPerAlly = caster.shield / allLivingAlliesIncludingCaster.length;
+                    
+                    battleLog(`✦스킬✦ ${caster.name}, [${skillName}] 사용: 자신의 보호막(${caster.shield.toFixed(0)})을 모든 살아 있는 아군 ${allLivingAlliesIncludingCaster.length}명에게 분배.`);
+        
+                    allLivingAlliesIncludingCaster.forEach(ally => {
                         ally.shield += shieldPerAlly;
-                        battleLog(`✦보호막✦ ${caster.name}, [반격] 효과: ${ally.name}에게 보호막 ${shieldPerAlly.toFixed(0)} 분배. (총 ${ally.shield.toFixed(0)})`);
+                        battleLog(`  ✦보호막✦ ${ally.name}: 보호막 +${shieldPerAlly.toFixed(0)}. (현재 ${ally.shield.toFixed(0)})`);
                     });
                     caster.shield = 0;
                 } else {
-                    battleLog(`✦정보✦ ${caster.name}, [반격] 사용: 보호막을 나눌 아군이 없습니다.`);
+                    // 시전자 자신만 살아 있거나, 다른 아군이 없는 경우
+                    battleLog(`✦정보✦ ${caster.name}, [${skillName}]: 보호막을 나눌 다른 아군이 없습니다. (보호막: ${caster.shield.toFixed(0)})`);
                 }
             } else {
-                battleLog(`✦정보✦ ${caster.name}, [반격] 사용: 나눌 보호막이 없습니다.`);
+                battleLog(`✦정보✦ ${caster.name}, [${skillName}]: 나눌 보호막이 없습니다.`);
             }
             return true;
         }
@@ -60,7 +73,7 @@ const SKILLS = {
                 enemy.addDebuff('provoked', '도발 (타겟 고정)', 2, { targetId: caster.id });
             });
             caster.aggroDamageStored = 0;
-            battleLog(`✦효과✦ ${caster.name}, [도발]: 모든 적을 도발하고 받는 피해를 줄입니다.`);
+            battleLog(`✦효과✦ ${caster.name}, [도발] 사용: 모든 적을 도발하며, 자신은 받는 피해가 감소합니다.`);
             return true;
         }
     },
@@ -72,11 +85,11 @@ const SKILLS = {
         description: "자신의 현재 체력 0.5로 감소. 해당 턴에 자신이 공격받은 후, 홀수 턴에는 (공격력 + [도발] 저장 피해)x1.5 물리 피해, 짝수 턴에는 (마법 공격력 + [도발] 저장 피해)x1.5 마법 피해를 공격한 적군에게 줌. 반격 후, 도발 저장량 초기화.",
         targetType: "self",
         targetSelection: "self",
-        execute: (caster, allies, enemies, battleLog) => {
+        execute: (caster, allies, enemies, battleLog) => { // battleLog 파라미터 추가 (일관성 및 사용)
             const hpLoss = caster.currentHp * 0.5;
             caster.currentHp -= hpLoss;
             if (caster.currentHp < 1) caster.currentHp = 1;
-            battleLog(`✦소모✦ ${caster.name}, [역습]: 체력 ${hpLoss.toFixed(0)} 소모. (현재 HP: ${caster.currentHp.toFixed(0)})`);
+            battleLog(`✦소모✦ ${caster.name}, [역습] 사용 준비: 체력 ${hpLoss.toFixed(0)} 소모. (현재 HP: ${caster.currentHp.toFixed(0)})`);
             caster.addBuff('reversal_active', '역습 대기', 1, {});
             return true;
         }
@@ -91,20 +104,20 @@ const SKILLS = {
         targetSelection: "ally_or_self",
         execute: (caster, target, allies, enemies, battleLog) => {
             if (!target) {
-                battleLog(`✦정보✦ [허상]: 스킬 대상을 찾을 수 없습니다.`);
-                return false; // 실패 명시
+                battleLog(`✦정보✦ ${caster.name} [허상]: 스킬 대상을 찾을 수 없습니다.`);
+                return false;
             }
             if (caster.id === target.id) {
                 const healAmount = caster.atk * 0.5;
                 caster.currentHp = Math.min(caster.maxHp, caster.currentHp + healAmount);
-                battleLog(`✦회복✦ ${caster.name}, [허상] 사용: 자신에게 체력 ${healAmount.toFixed(0)} 회복. (현재 HP: ${caster.currentHp.toFixed(0)})`);
+                battleLog(`✦회복✦ ${caster.name}, [허상] 사용 (자신): 체력 ${healAmount.toFixed(0)} 회복. (HP: ${caster.currentHp.toFixed(0)})`);
             } else {
                 const hpLoss = caster.atk * 0.2;
                 caster.currentHp -= hpLoss;
                 if (caster.currentHp < 1) caster.currentHp = 1;
-                battleLog(`✦소모✦ ${caster.name}, [허상] 사용 (${target.name} 대상): 체력 ${hpLoss.toFixed(0)} 소모. (현재 HP: ${caster.currentHp.toFixed(0)})`);
+                battleLog(`✦소모✦ ${caster.name}, [허상] 사용 (${target.name} 대상): 체력 ${hpLoss.toFixed(0)} 소모. (HP: ${caster.currentHp.toFixed(0)})`);
                 target.addBuff('illusion_atk_boost', '공격력 증가 (허상)', 2, { multiplier: 2.0 });
-                battleLog(`✦버프✦ ${target.name}, [허상 효과]: 공격력 2배 증가 (2턴).`);
+                battleLog(`✦버프✦ ${target.name}: [허상 효과] 공격력 2배 증가 (2턴).`);
             }
             const firstAliveEnemy = enemies.find(e => e.isAlive);
             if (firstAliveEnemy) {
@@ -125,10 +138,10 @@ const SKILLS = {
         targetSelection: "ally",
         execute: (caster, target, allies, enemies, battleLog) => {
             if (!target) {
-                battleLog(`✦정보✦ [허무]: 스킬 대상을 찾을 수 없습니다.`);
-                return false; // 실패 명시
+                battleLog(`✦정보✦ ${caster.name} [허무]: 스킬 대상을 찾을 수 없습니다.`);
+                return false;
             }
-            battleLog(`✦스킬✦ ${caster.name}, ${target.name}에게 [허무] 사용: 디버프 정화 및 랜덤 버프 부여 시도.`);
+            battleLog(`✦스킬✦ ${caster.name}, ${target.name}에게 [허무] 사용: 디버프 정화 및 랜덤 버프 부여.`);
             const removableDebuffs = target.debuffs.filter(d => ['상태 이상', '제어', '속성 감소'].includes(d.effect.category || '기타'));
             if (removableDebuffs.length > 0) {
                 for (let i = 0; i < Math.min(2, removableDebuffs.length); i++) {
@@ -150,7 +163,7 @@ const SKILLS = {
             ];
             const chosenBuff = buffChoices[Math.floor(Math.random() * buffChoices.length)];
             target.addBuff(chosenBuff.id, chosenBuff.name, chosenBuff.turns, chosenBuff.effect);
-            battleLog(`✦버프✦ ${target.name}, [허무 효과]: [${chosenBuff.name}] 획득 (2턴).`);
+            battleLog(`✦버프✦ ${target.name}: [허무 효과] [${chosenBuff.name}] 획득 (2턴).`);
             return true;
         }
     },
@@ -177,7 +190,6 @@ const SKILLS = {
             battleLog(`✦버프✦ 모든 아군: 방어력 30% 증가 (2턴).`);
 
             let realityStacks = 4;
-            // 연속 사용 보너스 로직은 현재 주석 처리되어 있음
             battleLog(`✦버프✦ ${caster.name}: [실재] ${realityStacks}스택 추가 획득 (2턴, 해제 불가).`);
             caster.addBuff('reality_stacks', '실재', 2, { atkBoostPerStack: 0.4, stacks: realityStacks, unremovable: true });
             caster.lastSkillTurn[SKILLS.SKILL_REALITY.id] = currentTurnNum;
@@ -193,7 +205,7 @@ const SKILLS = {
         targetType: "all_enemies",
         targetSelection: "all_enemies",
         execute: (caster, enemies, battleLog) => {
-            battleLog(`✦스킬✦ ${caster.name}, [진리] 사용: 모든 적에게 [중독] 부여.`);
+            battleLog(`✦스킬✦ ${caster.name}, [진리] 사용: 모든 적에게 [중독]을 부여합니다.`);
             enemies.filter(e => e.isAlive).forEach(enemy => {
                 enemy.addDebuff('poison', '중독', 2, { damagePerTurn: caster.atk * 0.5, type: 'fixed', casterId: caster.id });
                 battleLog(`✦상태 이상✦ ${enemy.name}, [중독] 효과 적용 (2턴).`);
@@ -211,13 +223,12 @@ const SKILLS = {
         targetType: "single_enemy",
         targetSelection: "enemy",
         execute: (caster, target, allies, enemies, battleLog) => {
-            if (!target) { battleLog(`✦정보✦ [서막]: 스킬 대상을 찾을 수 없습니다.`); return false; }
+            if (!target) { battleLog(`✦정보✦ ${caster.name} [서막]: 스킬 대상을 찾을 수 없습니다.`); return false; }
             const damageType = caster.atk >= caster.matk ? 'physical' : 'magical';
             const skillPower = damageType === 'physical' ? 2.0 : 2.5;
             const damage = calculateDamage(caster, target, skillPower, damageType);
-            target.takeDamage(damage, battleLog, caster); // takeDamage 내부에서 HP 로그 출력
-            battleLog(`✦피해✦ ${caster.name}, [서막] 사용: ${target.name}에게 ${damage.toFixed(0)} ${damageType === 'physical' ? '물리' : '마법'} 피해.`);
-
+            target.takeDamage(damage, battleLog, caster);
+            battleLog(`✦피해✦ ${caster.name}, [서막]: ${target.name}에게 ${damage.toFixed(0)} ${damageType === 'physical' ? '물리' : '마법'} 피해.`);
             target.addDebuff('scratch', '흠집', 2, { maxStacks: 3, overrideDuration: true, removerSkillId: SKILLS.SKILL_CLIMAX.id });
             battleLog(`✦디버프✦ ${target.name}, [흠집] 효과 적용 (현재 ${target.getDebuffStacks('scratch')}스택).`);
             return true;
@@ -232,34 +243,31 @@ const SKILLS = {
         targetType: "single_enemy",
         targetSelection: "enemy",
         execute: (caster, target, allies, enemies, battleLog) => {
-            if (!target) { battleLog(`✦정보✦ [절정]: 스킬 대상을 찾을 수 없습니다.`); return false; }
+            if (!target) { battleLog(`✦정보✦ ${caster.name} [절정]: 스킬 대상을 찾을 수 없습니다.`); return false; }
             const damageType = caster.atk >= caster.matk ? 'physical' : 'magical';
             const skillPower = damageType === 'physical' ? 2.7 : 3.1;
-            battleLog(`✦스킬✦ ${caster.name}, ${target.name}에게 [절정] 3타 공격 시작!`);
+            battleLog(`✦스킬✦ ${caster.name}, ${target.name}에게 [절정] 3연타 공격!`);
             for (let i = 0; i < 3; i++) {
                 const damage = calculateDamage(caster, target, skillPower / 3, damageType);
                 target.takeDamage(damage, battleLog, caster);
-                battleLog(`✦피해✦ [절정] ${i + 1}타: ${target.name}에게 ${damage.toFixed(0)} ${damageType === 'physical' ? '물리' : '마법'} 피해.`);
+                battleLog(`  ✦피해✦ [절정] ${i + 1}타: ${target.name}에게 ${damage.toFixed(0)} ${damageType === 'physical' ? '물리' : '마법'} 피해.`);
                 if (!target.isAlive) break;
             }
             if (!target.isAlive) return true;
 
             const scratchStacks = target.getDebuffStacks('scratch');
             if (scratchStacks > 0) {
-                battleLog(`✦효과✦ ${target.name} [흠집 ${scratchStacks}스택] 효과: 추가 공격 발생!`);
+                battleLog(`✦효과✦ ${target.name} [흠집 ${scratchStacks}스택]: 추가타 발생!`);
                 let bonusSkillPowerPercent = 0;
-                if (damageType === 'physical') { /* ... (기존 로직) ... */ } else { /* ... (기존 로직) ... */ }
-                 if (damageType === 'physical') {
+                if (damageType === 'physical') {
                     if (scratchStacks === 1) bonusSkillPowerPercent = 0.25; else if (scratchStacks === 2) bonusSkillPowerPercent = 0.35; else if (scratchStacks >= 3) bonusSkillPowerPercent = 0.45;
                 } else {
                     if (scratchStacks === 1) bonusSkillPowerPercent = 0.30; else if (scratchStacks === 2) bonusSkillPowerPercent = 0.40; else if (scratchStacks >= 3) bonusSkillPowerPercent = 0.50;
                 }
-
-
                 for (let i = 0; i < 2; i++) {
                     const bonusDamage = calculateDamage(caster, target, bonusSkillPowerPercent, damageType);
                     target.takeDamage(bonusDamage, battleLog, caster);
-                    battleLog(`✦추가 피해✦ [흠집 효과] ${i + 1}회: ${target.name}에게 ${bonusDamage.toFixed(0)} 추가 ${damageType === 'physical' ? '물리' : '마법'} 피해.`);
+                    battleLog(`  ✦추가 피해✦ [흠집 효과] ${i + 1}회: ${target.name}에게 ${bonusDamage.toFixed(0)} 추가 ${damageType === 'physical' ? '물리' : '마법'} 피해.`);
                     if (!target.isAlive) break;
                 }
                 if (target.isAlive) target.removeDebuffById('scratch');
@@ -268,7 +276,7 @@ const SKILLS = {
             if (!target.isAlive) return true;
 
             target.addDebuff('weakness', '쇠약', 2, { damageMultiplierReduction: 0.2 });
-            battleLog(`✦상태이상✦ ${target.name}, [쇠약] 효과 적용 (2턴).`);
+            battleLog(`✦상태 이상✦ ${target.name}, [쇠약] 효과 적용 (2턴).`);
             return true;
         }
     },
@@ -281,25 +289,25 @@ const SKILLS = {
         targetType: "single_enemy",
         targetSelection: "enemy",
         execute: (caster, target, allies, enemies, battleLog) => {
-            if (!target) { battleLog(`✦정보✦ [간파]: 스킬 대상을 찾을 수 없습니다.`); return false; }
+            if (!target) { battleLog(`✦정보✦ ${caster.name} [간파]: 스킬 대상을 찾을 수 없습니다.`); return false; }
             const damageType = caster.atk >= caster.matk ? 'physical' : 'magical';
             const skillPower1 = damageType === 'physical' ? 1.9 : 2.4;
             battleLog(`✦스킬✦ ${caster.name}, ${target.name}에게 [간파] 2연타 공격!`);
             for (let i=0; i<2; i++) {
                 const damage1 = calculateDamage(caster, target, skillPower1 / 2, damageType);
                 target.takeDamage(damage1, battleLog, caster);
-                battleLog(`✦피해✦ [간파] ${i+1}타: ${target.name}에게 ${damage1.toFixed(0)} ${damageType === 'physical' ? '물리' : '마법'} 피해.`);
+                battleLog(`  ✦피해✦ [간파] ${i+1}타: ${target.name}에게 ${damage1.toFixed(0)} ${damageType === 'physical' ? '물리' : '마법'} 피해.`);
                 if (!target.isAlive) return true;
             }
 
             const skillPower2 = damageType === 'physical' ? 0.5 : 0.7;
             const damage2 = calculateDamage(caster, target, skillPower2, damageType);
             target.takeDamage(damage2, battleLog, caster);
-            battleLog(`✦추가피해✦ ${caster.name} [간파 효과]: ${target.name}에게 ${damage2.toFixed(0)} 추가 ${damageType === 'physical' ? '물리' : '마법'} 피해.`);
+            battleLog(`✦추가 피해✦ ${caster.name} [간파 효과]: ${target.name}에게 ${damage2.toFixed(0)} 추가 ${damageType === 'physical' ? '물리' : '마법'} 피해.`);
             if (!target.isAlive) return true;
             
             target.addDebuff('weakness', '쇠약', 2, { damageMultiplierReduction: 0.2 });
-            battleLog(`✦상태이상✦ ${target.name}, [쇠약] 효과 적용 (2턴).`);
+            battleLog(`✦상태 이상✦ ${target.name}, [쇠약] 효과 적용 (2턴).`);
             return true;
         }
     },
@@ -312,30 +320,30 @@ const SKILLS = {
         targetType: "multi_enemy",
         targetSelection: "two_enemies",
         execute: (caster, mainTarget, subTarget, allies, enemies, battleLog) => {
-            if (!mainTarget) { battleLog(`✦정보✦ [파열]: 주 대상을 찾을 수 없습니다.`); return false; }
+            if (!mainTarget) { battleLog(`✦정보✦ ${caster.name} [파열]: 주 대상을 찾을 수 없습니다.`); return false; }
             const damageType = caster.atk >= caster.matk ? 'physical' : 'magical';
-            battleLog(`✦스킬✦ ${caster.name}, [파열]! 주 대상: ${mainTarget.name}${subTarget ? ', 부 대상: ' + subTarget.name : ''}.`);
+            battleLog(`✦스킬✦ ${caster.name}, [파열] 사용! 주 대상: ${mainTarget.name}${subTarget && subTarget.isAlive ? ', 부 대상: ' + subTarget.name : ''}.`);
             
             const mainSkillPower = damageType === 'physical' ? 2.1 : 2.6;
             const mainDamage = calculateDamage(caster, mainTarget, mainSkillPower, damageType);
             mainTarget.takeDamage(mainDamage, battleLog, caster);
-            battleLog(`✦피해✦ ${caster.name} [파열 주 대상]: ${mainTarget.name}에게 ${mainDamage.toFixed(0)} ${damageType === 'physical' ? '물리' : '마법'} 피해.`);
+            battleLog(`  ✦피해✦ [파열 주 대상] ${mainTarget.name}: ${mainDamage.toFixed(0)} ${damageType === 'physical' ? '물리' : '마법'} 피해.`);
             if (mainTarget.hasDebuff('weakness')) {
                 const bonusFixedDamage = mainDamage * 0.3;
                 mainTarget.takeDamage(bonusFixedDamage, battleLog, caster); 
-                battleLog(`✦추가 피해✦ ${mainTarget.name} [쇠약 대상 효과]: ${bonusFixedDamage.toFixed(0)} 추가 고정 피해!`);
+                battleLog(`  ✦추가 피해✦ ${mainTarget.name} [쇠약 대상 효과]: ${bonusFixedDamage.toFixed(0)} 추가 고정 피해.`);
             }
-            if (!mainTarget.isAlive && !subTarget) return true;
+            if (!mainTarget.isAlive && (!subTarget || !subTarget.isAlive)) return true;
 
             if (subTarget && subTarget.isAlive && mainTarget.id !== subTarget.id) {
                 const subSkillPower = damageType === 'physical' ? 1.3 : 1.8;
                 const subDamage = calculateDamage(caster, subTarget, subSkillPower, damageType);
                 subTarget.takeDamage(subDamage, battleLog, caster);
-                battleLog(`✦피해✦ ${caster.name} [파열 부 대상]: ${subTarget.name}에게 ${subDamage.toFixed(0)} ${damageType === 'physical' ? '물리' : '마법'} 피해.`);
+                battleLog(`  ✦피해✦ [파열 부 대상] ${subTarget.name}: ${subDamage.toFixed(0)} ${damageType === 'physical' ? '물리' : '마법'} 피해.`);
                 if (subTarget.hasDebuff('weakness')) {
                     const bonusFixedDamageSub = subDamage * 0.3;
                     subTarget.takeDamage(bonusFixedDamageSub, battleLog, caster);
-                    battleLog(`✦추가 피해✦ ${subTarget.name} [쇠약 대상 효과]: ${bonusFixedDamageSub.toFixed(0)} 추가 고정 피해!`);
+                    battleLog(`  ✦추가 피해✦ ${subTarget.name} [쇠약 대상 효과]: ${bonusFixedDamageSub.toFixed(0)} 추가 고정 피해.`);
                 }
             }
             return true;
@@ -482,31 +490,40 @@ class Character {
         if (!this.isAlive) return;
         let finalDamage = rawDamage;
         const initialHp = this.currentHp;
-
+        const prevIsAlive = this.isAlive; // 사망 로그를 위해 이전 생존 상태 저장
+    
         const provokeReductionBuff = this.buffs.find(b => b.id === 'provoke_damage_reduction' && b.turnsLeft > 0);
         if (provokeReductionBuff) {
             finalDamage *= (1 - provokeReductionBuff.effect.damageReduction);
-            logFn(`🛡️ ${this.name}은(는) [도발] 효과로 ${rawDamage.toFixed(0)}의 피해를 ${finalDamage.toFixed(0)}으로 감소시켰습니다.`);
+            logFn(`✦효과✦ ${this.name} [도발]: 받는 피해 ${rawDamage.toFixed(0)} → ${finalDamage.toFixed(0)}(으)로 감소.`);
         }
-
+    
         if (this.shield > 0) {
             const damageToShield = Math.min(finalDamage, this.shield);
-            this.shield -= damageToShield;
-            finalDamage -= damageToShield;
-            logFn(`🛡️ ${this.name}의 보호막이 ${damageToShield.toFixed(0)}만큼 피해를 흡수했습니다. (남은 보호막: ${this.shield.toFixed(0)})`);
+            if (damageToShield > 0) { // 실제로 보호막으로 피해를 흡수했을 때만 로그
+                this.shield -= damageToShield;
+                finalDamage -= damageToShield;
+                logFn(`✦보호막✦ ${this.name}: 보호막으로 피해 ${damageToShield.toFixed(0)} 흡수. (남은 보호막: ${this.shield.toFixed(0)})`);
+            }
         }
-
+    
         this.currentHp -= finalDamage;
-        const actualDamageTakenThisHit = Math.max(0, initialHp - this.currentHp - (this.shield > 0 ? 0 : Math.max(0, finalDamage - (initialHp - this.currentHp)) ) );
-
-        this.currentTurnDamageTaken += actualDamageTakenThisHit;
+        // 실제 체력 감소량 (보호막으로 흡수된 것을 제외하고, 음수 피해는 0으로 처리)
+        const actualHpLoss = Math.max(0, initialHp - (this.shield > 0 ? initialHp - finalDamage + this.shield : this.currentHp) );
+        // 위 계산이 복잡하면, 더 간단하게는 finalDamage (보호막으로 감소된 후의 순수 피해량)을 기준으로 변경
+        // 여기서는 실제 체력이 변한 양을 기준으로 확인
+        const netHpChange = initialHp - this.currentHp;
+    
+    
+        this.currentTurnDamageTaken += Math.max(0, netHpChange); // 음수 회복은 피해로 기록하지 않음
         this.lastAttackedBy = attacker ? attacker.id : null;
-
+    
+        // 반격/역습/피해 반사 효과
         if (attacker && attacker.isAlive) {
             if (this.hasBuff('counter_active')) {
-                const counterDamage = actualDamageTakenThisHit * 1.2;
+                const counterDamage = Math.max(0, netHpChange) * 1.2; // 실제 체력 감소분 기반
                 if (counterDamage > 0) {
-                    logFn(`↩️ ${this.name}이(가) [반격]으로 ${attacker.name}에게 ${counterDamage.toFixed(0)}의 피해를 되돌려주었습니다!`);
+                    logFn(`✦반격✦ ${this.name}: ${attacker.name}에게 ${counterDamage.toFixed(0)} 피해 되돌려줌.`);
                     attacker.takeDamage(counterDamage, logFn, this);
                 }
             }
@@ -514,48 +531,45 @@ class Character {
                 const storedDamage = this.aggroDamageStored || 0;
                 let reversalDamage = 0;
                 let reversalDamageType = '';
-                if (currentTurn % 2 !== 0) {
+                if (currentTurn % 2 !== 0) { // 홀수 턴
                     reversalDamage = (this.getEffectiveStat('atk') + storedDamage) * 1.5;
                     reversalDamageType = 'physical';
-                } else {
+                } else { // 짝수 턴
                     reversalDamage = (this.getEffectiveStat('matk') + storedDamage) * 1.5;
                     reversalDamageType = 'magical';
                 }
                 if (reversalDamage > 0) {
-                    logFn(`⚡ ${this.name}이(가) [역습]으로 ${attacker.name}에게 ${reversalDamage.toFixed(0)}의 ${reversalDamageType} 피해를 주었습니다!`);
+                    logFn(`✦역습✦ ${this.name}: ${attacker.name}에게 ${reversalDamage.toFixed(0)} ${reversalDamageType} 피해.`);
                     attacker.takeDamage(reversalDamage, logFn, this);
                 }
                 this.aggroDamageStored = 0;
                 this.removeBuffById('reversal_active');
             }
         }
-
+    
         const reflectBuff = this.buffs.find(b => b.effect.type === 'damage_reflect' && b.turnsLeft > 0);
         if (reflectBuff && attacker && attacker.isAlive) {
-            const reflectedDamage = actualDamageTakenThisHit * reflectBuff.effect.value;
+            const reflectedDamage = Math.max(0, netHpChange) * reflectBuff.effect.value; // 실제 체력 감소분 기반
             if (reflectedDamage > 0) {
-                // console.log("[DEBUG takeDamage] Before reflect log - typeof logFn:", typeof logFn); // 이전 제안된 로그
-                logFn(`🛡️ ${this.name}이(가) [${reflectBuff.name}] 효과로 ${attacker.name}에게 ${reflectedDamage.toFixed(0)}의 피해를 반사했습니다!`);
+                logFn(`✦피해 반사✦ ${this.name} [${reflectBuff.name} 효과]: ${attacker.name}에게 ${reflectedDamage.toFixed(0)} 피해 반사.`);
                 attacker.takeDamage(reflectedDamage, logFn, this);
             }
         }
-
+    
+        // 체력 및 생존 상태 업데이트 로그
         if (this.currentHp <= 0) {
             this.currentHp = 0;
-            if (this.isAlive) {
-                // 디버깅 로그 추가 1
-                console.log("[DEBUG takeDamage] Before death log - typeof logFn:", typeof logFn, "Actual value of logFn:", logFn);
-                logFn(`💀 ${this.name}이(가) 쓰러졌습니다!`);
+            if (prevIsAlive) { // 방금 죽었다면 (이전에 살아 있었는지 확인)
+                logFn(`✦전투 불능✦ ${this.name}, 쓰러집니다.`);
             }
             this.isAlive = false;
         }
-
-        // 디버깅 로그 추가 2
+    
+        // 디버깅 로그
         console.log("[DEBUG takeDamage] Before final HP log - typeof logFn:", typeof logFn, "Actual value of logFn:", logFn);
-        logFn(`[${this.name}의 HP]: ${initialHp.toFixed(0)} -> ${this.currentHp.toFixed(0)} (보호막: ${this.shield.toFixed(0)})`); // 이 라인이 541번째 줄 오류 발생 지점으로 강하게 의심됨
-
+        logFn(`✦정보✦ ${this.name} HP: ${initialHp.toFixed(0)} → ${this.currentHp.toFixed(0)} (보호막: ${this.shield.toFixed(0)})`);
+    
     } // takeDamage 함수의 끝
-
 
     getEffectiveStat(statName) {
         let value = this[statName];
@@ -726,23 +740,25 @@ function calculateDamage(attacker, defender, skillPower, damageType) {
 }
 
 function applyTurnStartEffects(character) {
-    character.currentTurnDamageTaken = 0;
+    character.currentTurnDamageTaken = 0; // 턴마다 받은 피해 초기화
 
+    // 버프 효과 처리
     character.buffs = character.buffs.filter(buff => {
         if (buff.effect.type === 'turn_start_heal' && buff.turnsLeft > 0) {
             const healAmount = buff.effect.value;
             character.currentHp = Math.min(character.maxHp, character.currentHp + healAmount);
-            logToBattleLog(`💖 ${character.name}이(가) [${buff.name}] 효과로 ${healAmount.toFixed(0)}HP 회복.`);
+            logToBattleLog(`✦회복✦ ${character.name}, [${buff.name} 효과]: HP ${healAmount.toFixed(0)} 회복. (현재 HP: ${character.currentHp.toFixed(0)})`);
         }
         if (!buff.unremovable) buff.turnsLeft--;
         return buff.turnsLeft > 0 || buff.unremovable;
     });
 
+    // 디버프 효과 처리
     character.debuffs = character.debuffs.filter(debuff => {
         if (debuff.id === 'poison' && debuff.turnsLeft > 0 && debuff.effect.type === 'fixed') {
             const poisonDamage = debuff.effect.damagePerTurn;
-            logToBattleLog(`☠️ ${character.name}이(가) [${debuff.name}]으로 ${poisonDamage.toFixed(0)}의 고정 피해.`);
-            character.takeDamage(poisonDamage, logToBattleLog); // logToBattleLog를 올바르게 전달
+            logToBattleLog(`✦상태 피해✦ ${character.name}, [${debuff.name} 효과]: ${poisonDamage.toFixed(0)} 고정 피해.`);
+            character.takeDamage(poisonDamage, logToBattleLog); 
         }
         debuff.turnsLeft--;
         return debuff.turnsLeft > 0;
@@ -750,26 +766,30 @@ function applyTurnStartEffects(character) {
 }
 
 function processEndOfTurnEffects(actingChar) {
+    // [허상] 스킬의 턴 종료 추가 공격 효과 처리
     const illusionBuff = actingChar.buffs.find(b => b.id === 'illusion_end_turn_attack' && b.turnsLeft > 0);
     if (illusionBuff) {
         const caster = findCharacterById(illusionBuff.effect.attackerId);
         const enemyTarget = findCharacterById(illusionBuff.effect.enemyTargetId);
         if (caster && enemyTarget && enemyTarget.isAlive) {
-            const bonusDamage = calculateDamage(caster, enemyTarget, 0.5, 'physical');
-            logToBattleLog(`☄️ [허상] 턴 종료 효과! ${caster.name}이(가) ${enemyTarget.name}에게 ${bonusDamage.toFixed(0)} 추가 물리 피해.`);
+            const bonusDamage = calculateDamage(caster, enemyTarget, 0.5, 'physical'); // 공격력의 50% 물리 피해
+            // 수정된 로그:
+            logToBattleLog(`✦추가 공격✦ ${caster.name} [허상 턴 종료]: ${enemyTarget.name}에게 ${bonusDamage.toFixed(0)} 추가 물리 피해.`);
             enemyTarget.takeDamage(bonusDamage, logToBattleLog, caster);
         }
         actingChar.removeBuffById('illusion_end_turn_attack');
     }
 
+    // [진리] 스킬의 턴 종료 추가 공격 효과 처리
     const truthMarkerBuff = actingChar.buffs.find(b => b.id === 'truth_caster_marker' && b.turnsLeft > 0);
     if (truthMarkerBuff) {
         const originalCaster = findCharacterById(truthMarkerBuff.effect.originalCasterId);
         const aliveEnemies = enemyCharacters.filter(e => e.isAlive);
         if (originalCaster && aliveEnemies.length > 0) {
             const randomEnemyTarget = aliveEnemies[Math.floor(Math.random() * aliveEnemies.length)];
-            const bonusDamage = calculateDamage(originalCaster, randomEnemyTarget, 0.3, 'physical');
-            logToBattleLog(`🎯 [진리] 턴 종료 효과! ${originalCaster.name}이(가) ${randomEnemyTarget.name}에게 ${bonusDamage.toFixed(0)} 추가 물리 피해.`);
+            const bonusDamage = calculateDamage(originalCaster, randomEnemyTarget, 0.3, 'physical'); // 시전자 공격력의 30% 물리 피해
+            // 수정된 로그:
+            logToBattleLog(`✦추가 공격✦ ${originalCaster.name} [진리 턴 종료]: ${randomEnemyTarget.name}에게 ${bonusDamage.toFixed(0)} 추가 물리 피해.`);
             randomEnemyTarget.takeDamage(bonusDamage, logToBattleLog, originalCaster);
         }
         actingChar.removeBuffById('truth_caster_marker');
@@ -1220,69 +1240,115 @@ async function executeBattleTurn() {
 }
 
 async function performEnemyAction(enemyChar) {
-    applyTurnStartEffects(enemyChar);
-    logToBattleLog(`\n--- ${enemyChar.name}의 행동 (${currentTurn} 턴) ---`);
+    applyTurnStartEffects(enemyChar); // 턴 시작 효과 적용 (내부 로그는 이미 수정됨)
+    // 수정된 로그:
+    logToBattleLog(`\n--- ${enemyChar.name} (AI) 행동 (${currentTurn}턴) ---`);
 
-    let targetAlly = null;
-    const provokeDebuff = enemyChar.debuffs.find(d => d.id === 'provoked' && d.turnsLeft > 0);
-    if (provokeDebuff) {
-        targetAlly = findCharacterById(provokeDebuff.effect.targetId);
-        if (!targetAlly || !targetAlly.isAlive) targetAlly = null;
+    let targetAlly = null; // 플레이어의 아군 중 공격 대상
+    const provokeDebuffOnEnemy = enemyChar.debuffs.find(d => d.id === 'provoked' && d.turnsLeft > 0);
+    if (provokeDebuffOnEnemy) {
+        targetAlly = findCharacterById(provokeDebuffOnEnemy.effect.targetId);
+        if (!targetAlly || !targetAlly.isAlive) {
+            targetAlly = null; // 도발 대상이 죽었거나 유효하지 않으면 타겟 해제
+            logToBattleLog(`✦정보✦ ${enemyChar.name} (AI): 도발 대상이 유효하지 않아 새로운 대상을 탐색합니다.`);
+        } else {
+            logToBattleLog(`✦정보✦ ${enemyChar.name} (AI): [도발] 효과로 ${targetAlly.name}을(를) 우선 공격합니다.`);
+        }
     }
 
     if (!targetAlly) {
         const aliveAllies = allyCharacters.filter(a => a.isAlive);
         if (aliveAllies.length > 0) {
+            // 가장 체력이 낮은 아군을 대상으로 단순 AI
             targetAlly = aliveAllies.reduce((min, char) => (char.currentHp < min.currentHp ? char : min), aliveAllies[0]);
         }
     }
 
     if (targetAlly) {
-        const usableSkills = enemyChar.skills.map(id => SKILLS[id]).filter(s => s);
+        // 예고된 스킬 사용 (Mapdata.js 및 관련 로직 구현 후 사용)
+        // const skillToUse = enemyChar.nextSkillToUse; 
+        
+        // 현재 로직: 사용 가능한 스킬 중 랜덤 선택
+        const usableSkills = enemyChar.skills.map(id => SKILLS[id]).filter(s => s && 
+            !(s.id === SKILLS.SKILL_REALITY.id && enemyChar.lastSkillTurn[s.id] && currentTurn - enemyChar.lastSkillTurn[s.id] < 3) // 예시: 실존 쿨타임 체크
+        );
         let skillToUse = null;
-        if (usableSkills.length > 0) { // 스킬이 있다면 랜덤 사용
-             // TODO: 좀 더 지능적인 AI (예: 버프/디버프 우선순위, HP 낮은 적 공격 등)
+        if (usableSkills.length > 0) {
             skillToUse = usableSkills[Math.floor(Math.random() * usableSkills.length)];
         }
 
+        const aiTargetName = targetAlly.name; // 로그용 대상 이름
 
         if (skillToUse) {
-            logToBattleLog(`${enemyChar.name}이(가) ${targetAlly.name}에게 [${skillToUse.name}] 사용! (적 AI)`);
-            let actualAllies = allyCharacters.filter(a => a.isAlive); // 적에게는 아군이 single_enemy 대상
-            let actualEnemies = enemyCharacters.filter(e => e.isAlive); // 적에게는 적군이 single_ally 대상
+            // 수정된 로그:
+            logToBattleLog(`🔥 ${enemyChar.name} (AI), [${skillToUse.name}] 시전! (대상: ${skillToUse.targetType.includes("enemy") || skillToUse.targetType.includes("multi") ? aiTargetName : (skillToUse.targetType.includes("ally") ? "아군(적)" : "자신") })`);
+            
+            let alliesForEnemySkill = allyCharacters.filter(a => a.isAlive); // 적의 입장에서는 플레이어 아군들이 '적 리스트'
+            let enemiesForEnemySkill = enemyCharacters.filter(e => e.isAlive); // 적의 입장에서는 다른 적들이 '아군 리스트'
 
-            // 적의 스킬 대상 유형에 따라 적절히 mainTarget, subTarget 등을 설정하여 호출
-            if (skillToUse.targetType === "single_enemy") { // 여기서 single_enemy는 플레이어의 아군을 의미
-                skillToUse.execute(enemyChar, targetAlly, null, actualAllies, actualEnemies, logToBattleLog);
-            } else if (skillToUse.targetType === "self") {
-                skillToUse.execute(enemyChar, enemyChar, null, actualAllies, actualEnemies, logToBattleLog);
-            } else if (skillToUse.targetType === "all_allies") { // 적의 "all_allies"는 플레이어의 모든 아군
-                skillToUse.execute(enemyChar, actualAllies, actualEnemies, logToBattleLog);
-            } else if (skillToUse.targetType === "all_enemies") { // 적의 "all_enemies"는 다른 모든 적들
-                 skillToUse.execute(enemyChar, actualEnemies, logToBattleLog); // 진리 스킬과 유사한 시그니처 가정
-            } else if (skillToUse.targetType === "single_ally"){ // 적의 "single_ally"는 다른 적 하나
-                const otherEnemies = actualEnemies.filter(e => e.id !== enemyChar.id);
-                if(otherEnemies.length > 0){
-                    skillToUse.execute(enemyChar, otherEnemies[0], null, actualAllies, actualEnemies, logToBattleLog);
-                } else { // 자신 외 다른 아군(적)이 없으면 자신에게
-                     skillToUse.execute(enemyChar, enemyChar, null, actualAllies, actualEnemies, logToBattleLog);
-                }
+            // 스킬 타입에 따른 실행 (이전 답변의 switch 문 참고)
+            // 이 부분은 executeSingleAction의 스킬 호출 switch문과 매우 유사하게 구성되어야 합니다.
+            // 각 스킬의 execute 함수가 기대하는 파라미터 순서대로 전달해야 합니다.
+            switch (skillToUse.targetType) {
+                case 'self':
+                    if (skillToUse.id === SKILLS.SKILL_PROVOKE.id || skillToUse.id === SKILLS.SKILL_REALITY.id) {
+                        skillToUse.execute(enemyChar, enemiesForEnemySkill, alliesForEnemySkill, logToBattleLog);
+                    } else { 
+                        skillToUse.execute(enemyChar, enemyChar, enemiesForEnemySkill, alliesForEnemySkill, logToBattleLog);
+                    }
+                    break;
+                case 'all_enemies': // 적 AI의 '모든 적'은 플레이어의 아군들
+                    skillToUse.execute(enemyChar, alliesForEnemySkill, logToBattleLog);
+                    break;
+                case 'all_allies': // 적 AI의 '모든 아군'은 다른 적 캐릭터들
+                    skillToUse.execute(enemyChar, enemiesForEnemySkill, alliesForEnemySkill, logToBattleLog);
+                    break;
+                case 'single_enemy': // 적 AI의 '단일 적'은 플레이어 아군 중 하나 (targetAlly)
+                    skillToUse.execute(enemyChar, targetAlly, enemiesForEnemySkill, alliesForEnemySkill, logToBattleLog);
+                    break;
+                case 'single_ally_or_self': // 적 AI가 자신 또는 다른 적에게 사용
+                    // AI 로직: 자신에게 이로운 효과면 자신, 아니면 다른 적에게 (여기서는 단순화)
+                    let selfOrAllyTarget = enemyChar; // 기본은 자신
+                    if (skillToUse.id === SKILLS.SKILL_ILLUSION.id && enemiesForEnemySkill.length > 1) { // 예: 허상 - 다른 적이 있으면 그 적에게 버프
+                        let otherEnemy = enemiesForEnemySkill.find(e => e.id !== enemyChar.id);
+                        if(otherEnemy) selfOrAllyTarget = otherEnemy;
+                    }
+                    skillToUse.execute(enemyChar, selfOrAllyTarget, enemiesForEnemySkill, alliesForEnemySkill, logToBattleLog);
+                    break;
+                case 'single_ally': // 적 AI의 '단일 아군'은 다른 적 캐릭터 중 하나
+                    let friendlyEnemyTarget = enemiesForEnemySkill.find(e => e.id !== enemyChar.id);
+                    if (!friendlyEnemyTarget && enemiesForEnemySkill.length > 0) friendlyEnemyTarget = enemyChar; // 다른 동료 없으면 자신
+                    
+                    if (friendlyEnemyTarget) {
+                         skillToUse.execute(enemyChar, friendlyEnemyTarget, enemiesForEnemySkill, alliesForEnemySkill, logToBattleLog);
+                    } else {
+                         logToBattleLog(`✦정보✦ ${enemyChar.name} (AI) [${skillToUse.name}]: 대상 아군(적)을 찾을 수 없습니다.`);
+                    }
+                    break;
+                case 'multi_enemy': // 주 대상은 targetAlly, 부 대상은 다른 플레이어 아군
+                    let subTargetForMulti = alliesForEnemySkill.find(a => a.isAlive && a.id !== targetAlly.id);
+                    skillToUse.execute(enemyChar, targetAlly, subTargetForMulti, enemiesForEnemySkill, alliesForEnemySkill, logToBattleLog);
+                    break;
+                default:
+                    logToBattleLog(`✦정보✦ ${enemyChar.name} (AI) [${skillToUse.name}]: 스킬 대상 타입(${skillToUse.targetType}) AI 실행 미지원. ${aiTargetName}에게 기본 공격.`);
+                    const damage = calculateDamage(enemyChar, targetAlly, 1.0, 'physical');
+                    targetAlly.takeDamage(damage, logToBattleLog, enemyChar);
+                    break;
             }
-            else {
-                logToBattleLog(`${enemyChar.name}의 [${skillToUse.name}] 스킬 대상 타입(${skillToUse.targetType}) 자동 실행 미지원. 기본 공격으로 대체.`);
-                const damage = calculateDamage(enemyChar, targetAlly, 1.0, 'physical');
-                targetAlly.takeDamage(damage, logToBattleLog, enemyChar);
-            }
-        } else { // 스킬 없으면 기본 공격
-            logToBattleLog(`${enemyChar.name}이(가) ${targetAlly.name}에게 기본 공격!`);
+        } else if (targetAlly) { // 사용할 스킬이 없으면 기본 공격
+            logToBattleLog(`✦정보✦ ${enemyChar.name} (AI), ${aiTargetName}에게 기본 공격.`);
             const damage = calculateDamage(enemyChar, targetAlly, 1.0, 'physical');
             targetAlly.takeDamage(damage, logToBattleLog, enemyChar);
+        } else {
+            logToBattleLog(`✦정보✦ ${enemyChar.name} (AI): 공격할 대상이 없습니다.`);
         }
-    } else {
-        logToBattleLog(`${enemyChar.name}이(가) 공격할 대상이 없습니다.`);
+    } else { // 공격할 플레이어 아군이 없음
+        logToBattleLog(`✦정보✦ ${enemyChar.name} (AI): 공격할 대상(플레이어 아군)이 없습니다.`);
     }
+
+    // enemyChar.nextSkillToUse = null; // Mapdata.js 스킬 예고 기능 사용 시 주석 해제
     processEndOfTurnEffects(enemyChar);
-    displayCharacters();
+    displayCharacters(); // 캐릭터 카드 업데이트 (예고 스킬 표시 등)
     return checkBattleEnd();
 }
 
