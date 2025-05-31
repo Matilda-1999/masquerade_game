@@ -1026,19 +1026,29 @@ function selectTarget(targetCharId) {
 }
 
 function confirmAction() {
-    if (!selectedAction.type) { alert('행동을 선택해 주세요.'); return; }
+    if (!selectedAction.type) {
+        alert('행동을 선택해 주세요.');
+        return;
+    }
 
     const caster = findCharacterById(selectedAction.casterId);
-    if (!caster) { alert('시전자를 찾을 수 없습니다.'); return; }
+    if (!caster) {
+        alert('시전자를 찾을 수 없습니다.');
+        return;
+    }
 
     let actionDetails = { caster: caster, type: selectedAction.type };
-    let targetDescription = "정보 없음"
+    let targetDescription = "정보 없음"; // ⭐ 1. 변수 선언 및 초기값 할당
 
     if (selectedAction.type === 'skill') {
         const skill = SKILLS[selectedAction.skillId];
-        if (!skill) { alert('선택된 스킬 정보를 찾을 수 없습니다.'); return; }
+        if (!skill) {
+            alert('선택된 스킬 정보를 찾을 수 없습니다.');
+            return;
+        }
         actionDetails.skill = skill;
 
+        // ⭐ 2. 선택된 대상에 따라 targetDescription 값 설정 ⭐
         if (skill.targetSelection === 'self') {
             targetDescription = caster.name; // 자신 대상
             actionDetails.mainTarget = caster;
@@ -1065,35 +1075,48 @@ function confirmAction() {
             // 대상을 선택해야 하는 스킬인데 targetId가 없는 경우
             targetDescription = "대상 미선택";
         }
-        // 수정된 로그
+        // ⭐ 4. 로그 메시지 수정 (HTML 태그 및 불필요한 이스케이프 문자 제거) ⭐
         logToBattleLog(`✦준비✦ ${caster.name}, [${skill.name}] 스킬 사용 준비. (대상: ${targetDescription})`);
-        
-         // 이동 시 경계 및 점유 재확인
+
+    } else if (selectedAction.type === 'move') {
+        actionDetails.moveDelta = selectedAction.moveDelta;
+        // 이동 시에는 selectedAction.moveDelta가 null이 아닌지 확인하는 것이 중요
+        if (!selectedAction.moveDelta) {
+             console.error("confirmAction: Move action selected, but moveDelta is null!");
+             alert("이동 정보 오류. 다시 선택해주세요.");
+             selectedAction = { type: null, casterId: caster.id, skillId: null, targetId: null, subTargetId: null, moveDelta: null };
+             showSkillSelectionForNextAlly();
+             return;
+        }
+
         const targetX = caster.posX + selectedAction.moveDelta.dx;
         const targetY = caster.posY + selectedAction.moveDelta.dy;
-        if (targetX < 0 || targetX >= MAP_WIDTH || targetY < 0 || targetY >= MAP_HEIGHT) {
-            logToBattleLog(`❗ [${caster.name}] 이동 확정 실패: 맵 범위 이탈 (${targetX},${targetY})`);
+
+        // ⭐ 3. 이동(move) 타입 처리 시에는 스킬 대상 설정 로직이 필요 없음 (제거) ⭐
+        // 아래 유효성 검사는 유지하거나, selectMove에서 이미 처리했다면 간소화 가능
+        if (targetX < 1 || targetX > MAP_WIDTH || targetY < 1 || targetY > MAP_HEIGHT) { // 1기반 좌표계 가정
+            logToBattleLog(`✦정보✦ ${caster.name}, 이동 불가: (${targetX},${targetY}) 맵 범위 이탈.`);
             alert("맵 경계를 벗어나는 이동은 확정할 수 없습니다.");
-            selectedAction = { type: null, casterId: caster.id, skillId: null, targetId: null, subTargetId: null, moveDelta: null }; // 선택 초기화
-            showSkillSelectionForNextAlly(); // 현재 캐릭터 행동 다시 선택
+            selectedAction = { type: null, casterId: caster.id, skillId: null, targetId: null, subTargetId: null, moveDelta: null };
+            showSkillSelectionForNextAlly(); 
             return;
         }
         if (characterPositions[`${targetX},${targetY}`] && characterPositions[`${targetX},${targetY}`] !== caster.id) {
-            logToBattleLog(`❗ [${caster.name}] 이동 확정 실패: 다른 캐릭터 점유 중 (${targetX},${targetY})`);
+            logToBattleLog(`✦정보✦ ${caster.name}, 이동 불가: (${targetX},${targetY}) 위치에 다른 캐릭터 있음.`);
             alert("다른 캐릭터가 있는 곳으로 이동은 확정할 수 없습니다.");
-            selectedAction = { type: null, casterId: caster.id, skillId: null, targetId: null, subTargetId: null, moveDelta: null }; // 선택 초기화
-            showSkillSelectionForNextAlly(); // 현재 캐릭터 행동 다시 선택
+            selectedAction = { type: null, casterId: caster.id, skillId: null, targetId: null, subTargetId: null, moveDelta: null };
+            showSkillSelectionForNextAlly(); 
             return;
         }
-        logToBattleLog(`✦준비✦ <span class="math-inline">\{caster\.name\}, \(</span>{targetX}, ${targetY})(으)로 이동 예정.`);
+        // ⭐ 4. 로그 메시지 수정 (HTML 태그 및 불필요한 이스케이프 문자 제거) ⭐
+        logToBattleLog(`✦준비✦ ${caster.name}, (${targetX},${targetY})(으)로 이동 준비.`);
     }
 
-    if (skillDescriptionArea) skillDescriptionArea.innerHTML = ''; // 행동 확정 후 설명 영역 초기화
+    if (skillDescriptionArea) skillDescriptionArea.innerHTML = ''; 
     
     playerActionsQueue.push(actionDetails);
     currentActingCharacterIndex++;
-    // showSkillSelectionForNextAlly(); // 이 호출은 prepareNextTurn으로 대체
-    prepareNextTurn(); // 다음 아군 행동 선택 또는 턴 실행 버튼 표시
+    prepareNextTurn(); 
 }
 
 async function executeSingleAction(action) {
