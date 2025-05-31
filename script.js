@@ -534,10 +534,12 @@ class Character {
         if (this.currentHp <= 0) {
             this.currentHp = 0;
             if (this.isAlive) { 
+                console.log("[DEBUG takeDamage] Before death log - typeof logFn:", typeof logFn, "Actual value of logFn:", logFn);
                  logFn(`💀 ${this.name}이(가) 쓰러졌습니다!`);
             }
             this.isAlive = false;
         }
+        console.log("[DEBUG takeDamage] Before final HP log (line 541 suspected) - typeof logFn:", typeof logFn, "Actual value of logFn:", logFn);
         logFn(`[${this.name}의 HP]: ${initialHp.toFixed(0)} -> ${this.currentHp.toFixed(0)} (보호막: ${this.shield.toFixed(0)})`);
     }
 
